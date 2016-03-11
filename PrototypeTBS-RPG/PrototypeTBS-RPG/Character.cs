@@ -9,6 +9,7 @@ namespace PrototypeTBS_RPG
     {
 
         public Specialization spec { get; private set; }
+        public List<Item> inventory { get; private set; }
         public string name { get; private set; }
 
         public Character(string name, Specialization spec)

@@ -7,6 +7,8 @@ namespace PrototypeTBS_RPG
 {
     abstract class Specialization
     {
+        public List<weaponType> weaponProfs { get; protected set; }
+
 
     }
 }

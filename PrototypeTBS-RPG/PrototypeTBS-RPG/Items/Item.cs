@@ -5,8 +5,10 @@ using System.Text;
 
 namespace PrototypeTBS_RPG
 {
-    abstract class Weapon
+    abstract class Item
     {
+        public string name { get; protected set; }
+
 
     }
 }
