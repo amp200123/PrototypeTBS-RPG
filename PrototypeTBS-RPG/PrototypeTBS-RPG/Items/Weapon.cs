@@ -7,15 +7,23 @@ namespace PrototypeTBS_RPG
 {
     enum weaponType
     {
-        Lance,
-        Sword,
-        Axe,
-        Bow
+        lance,
+        sword,
+        axe,
+        bow,
+        lightMagic,
+        elementalMagic,
+        darkMagic,
+        staff,
+
+        none
     }
 
     abstract class Weapon : Item
     {
         public weaponType type { get; protected set; }
+        public weaponType weakness { get; protected set; }
+        public weaponType advantage { get; protected set; }
 
 
     }
