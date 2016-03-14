@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -12,10 +13,22 @@ namespace PrototypeTBS_RPG
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        GameScreen gameScreen;
+        Screen currentScreen;
+
+        public const int WINDOW_WIDTH = 800;
+        public const int WINDOW_HEIGHT = 480;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            this.IsMouseVisible = true;
+            graphics.PreferredBackBufferWidth = WINDOW_WIDTH;
+            graphics.PreferredBackBufferHeight = WINDOW_HEIGHT;
+
+            graphics.ApplyChanges();
         }
 
         /// <summary>
@@ -40,7 +53,8 @@ namespace PrototypeTBS_RPG
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            gameScreen = new GameScreen(Content, new EventHandler(GameScreenEvent), 1);
+            currentScreen = gameScreen;
         }
 
         /// <summary>
@@ -49,7 +63,6 @@ namespace PrototypeTBS_RPG
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
 
         /// <summary>
@@ -59,10 +72,7 @@ namespace PrototypeTBS_RPG
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // TODO: Add your update logic here
+            currentScreen.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -75,9 +85,14 @@ namespace PrototypeTBS_RPG
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            currentScreen.Draw(gameTime, spriteBatch);
 
             base.Draw(gameTime);
+        }
+
+        private void GameScreenEvent(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -40,11 +40,15 @@
   <ItemGroup>
     <Compile Include="Character.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GameObject.cs" />
+    <Compile Include="GameScreen.cs" />
     <Compile Include="Items\Item.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Screen.cs" />
     <Compile Include="Specializations\Specialization.cs" />
     <Compile Include="Items\Weapon.cs" />
+    <Compile Include="Tile.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
@@ -54,6 +58,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\SelectedTile.png" />
+    <Content Include="Content\Tiles\Plain.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
