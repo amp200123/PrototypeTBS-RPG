@@ -53,7 +53,7 @@ namespace PrototypeTBS_RPG
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            gameScreen = new GameScreen(Content, new EventHandler(GameScreenEvent), 1);
+            gameScreen = new GameScreen(Content, new EventHandler(GameScreenEvent), "Levels/testLevel.txt");
             currentScreen = gameScreen;
         }
 
@@ -85,7 +85,9 @@ namespace PrototypeTBS_RPG
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            spriteBatch.Begin();
             currentScreen.Draw(gameTime, spriteBatch);
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }

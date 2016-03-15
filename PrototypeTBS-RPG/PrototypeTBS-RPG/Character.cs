@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace PrototypeTBS_RPG
 {
@@ -54,6 +56,11 @@ namespace PrototypeTBS_RPG
             defence = spec.defence;
             resistance = spec.resistance;
 
+        }
+
+        public void Draw(SpriteBatch spritebatch, Vector2 position)
+        {
+            spec.Draw(spritebatch, position);
         }
 
         private void LevelUp()

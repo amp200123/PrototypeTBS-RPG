@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace PrototypeTBS_RPG
 {
@@ -40,6 +42,7 @@ namespace PrototypeTBS_RPG
 
     abstract class Specialization
     {
+        public Texture2D sprite { get; protected set; }
         public List<weaponType> weaponProfs { get; protected set; }
         public List<specializations> promotions { get; protected set; }
         public bool isAdvancedSpec { get; protected set; }
@@ -55,5 +58,25 @@ namespace PrototypeTBS_RPG
         public int resistance { get; private set; }
         public int movement { get; private set; }
 
+        protected Specialization(Texture2D sprite, bool isAdvanced, List<weaponType> weaponProfs, int hp,
+            int strength, int magic, int speed, int skill, int luck, int defence, int resistance, int movement)
+        {
+            this.sprite = sprite;
+            this.hp = hp;
+            this.strength = strength;
+            this.magic = magic;
+            this.speed = speed;
+            this.skill = skill;
+            this.luck = luck;
+            this.defence = defence;
+            this.resistance = resistance;
+            this.movement = movement;
+        }
+
+        public void Draw(SpriteBatch spritebatch, Vector2 position)
+        {
+            spritebatch.Draw(sprite, position, new Rectangle(0, 0, sprite.Width, sprite.Height), Color.White, 0,
+                    new Vector2(sprite.Width / 2, sprite.Height / 2), 1, SpriteEffects.None, 1);
+        }
     }
 }
