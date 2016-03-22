@@ -53,7 +53,7 @@ namespace PrototypeTBS_RPG
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            gameScreen = new GameScreen(Content, new EventHandler(GameScreenEvent), "Levels/testLevel.txt");
+            gameScreen = new GameScreen(Content, new EventHandler(GameScreenEvent), "testLevel");
             currentScreen = gameScreen;
         }
 

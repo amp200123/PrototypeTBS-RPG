@@ -46,3 +46,6 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/Knight.png
 
+#begin Levels/testLevel.txt
+/copy:Levels/testLevel.txt
+
