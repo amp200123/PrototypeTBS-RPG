@@ -11,7 +11,7 @@ namespace PrototypeTBS_RPG
 
     class Tile : GameObject
     {
-        public int defence { get; private set; }
+        public int defense { get; private set; }
         public int health { get; private set; }
         public int movement { get; private set; }
 
@@ -20,13 +20,13 @@ namespace PrototypeTBS_RPG
 
         private Texture2D selectedTile;
 
-        public Tile(ContentManager content, Texture2D texture, int defence, int health, int movement) : base(texture)
+        public Tile(ContentManager content, Texture2D texture, int defense, int health, int movement) : base(texture)
         {
-            this.defence = defence;
+            this.defense = defense;
             this.health = health;
             this.movement = movement;
 
-            selectedTile = content.Load<Texture2D>("SelectedTile");
+            selectedTile = content.Load<Texture2D>("Misc/SelectedTile");
         }
 
         public override void Draw(SpriteBatch spritebatch)

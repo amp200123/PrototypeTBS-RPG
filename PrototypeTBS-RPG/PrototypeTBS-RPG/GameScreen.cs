@@ -16,10 +16,21 @@ namespace PrototypeTBS_RPG
         public Tile[,] map { get; private set; }
 
         private Character characterA;
+        private Tile selectedTile;
+        private List<PopupMenuBar> menuItems;
+        private bool renderMenu;
+
+        private MouseState oldMouseState;
+        private KeyboardState oldKeyState;
 
         public GameScreen(ContentManager content, EventHandler screenEvent, string fileName)
             : base(screenEvent)
         {
+            oldKeyState = Keyboard.GetState();
+            oldMouseState = Mouse.GetState();
+
+            menuItems = new List<PopupMenuBar>();
+
             characterA = new Character("Character A", new Knight(content));
 
             Tile plain = new Tile(content,content.Load<Texture2D>("Tiles/Plain"), 0, 0, 0);
@@ -60,33 +71,62 @@ namespace PrototypeTBS_RPG
 
         public override void Update(GameTime gametime)
         {
-            MouseState mouseState = Mouse.GetState();
-            KeyboardState newState = Keyboard.GetState();
+            MouseState newMouseState = Mouse.GetState();
+            KeyboardState newKeyState = Keyboard.GetState();
 
+            bool hasSelectedTile = false;
             foreach (Tile tile in map)
             {
-                if (mouseState.X < tile.boundingRectangle.Right && mouseState.X > tile.boundingRectangle.Left &&
-                    mouseState.Y < tile.boundingRectangle.Bottom && mouseState.Y > tile.boundingRectangle.Top)
+                if (newMouseState.X <= tile.boundingRectangle.Right && newMouseState.X > tile.boundingRectangle.Left &&
+                    newMouseState.Y <= tile.boundingRectangle.Bottom && newMouseState.Y > tile.boundingRectangle.Top)
+                {
                     tile.isSelected = true;
+                    selectedTile = tile;
+                    hasSelectedTile = true;
+                }
                 else tile.isSelected = false;
             }
 
-            if (newState.IsKeyDown(Keys.Up))
+            if (!hasSelectedTile)
+                selectedTile = null;
+
+            if (oldMouseState.LeftButton == ButtonState.Pressed && newMouseState.LeftButton == ButtonState.Released)
+            {
+                if (hasSelectedTile)
+                {
+                    renderMenu = true;
+                    menuItems = GetMenu();
+                }
+            }
+
+            //Keyboard input
+            if (newKeyState.IsKeyDown(Keys.Up))
             {
                 MoveScreen(0, 3);
             }
-            if (newState.IsKeyDown(Keys.Down))
+            if (newKeyState.IsKeyDown(Keys.Down))
             {
                 MoveScreen(0, -3);
             }
-            if (newState.IsKeyDown(Keys.Left))
+            if (newKeyState.IsKeyDown(Keys.Left))
             {
                 MoveScreen(3, 0);
             }
-            if (newState.IsKeyDown(Keys.Right))
+            if (newKeyState.IsKeyDown(Keys.Right))
             {
                 MoveScreen(-3, 0);
             }
+
+            //Drag movement input
+            if (!renderMenu && newMouseState.Position.X <= Game1.WINDOW_WIDTH && newMouseState.Position.X >= 0 &&
+                newMouseState.Position.Y <= Game1.WINDOW_HEIGHT && newMouseState.Position.Y >= 0 &&
+                newMouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Pressed)
+            {
+                MoveScreen((newMouseState.Position - oldMouseState.Position).ToVector2());
+            }
+
+            oldMouseState = newMouseState;
+            oldKeyState = newKeyState;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spritebatch)
@@ -103,6 +143,11 @@ namespace PrototypeTBS_RPG
             {
                 tile.position += new Vector2(x, y);
             }
+        }
+
+        private void MoveScreen(Vector2 vector)
+        {
+            MoveScreen(vector.X, vector.Y);
         }
 
         private Tile[,] ImportLevel(ContentManager content, string fileName)
@@ -148,6 +193,47 @@ namespace PrototypeTBS_RPG
 
             }
             else throw new FileNotFoundException();
+        }
+
+        private List<PopupMenuBar> GetMenu()
+        {
+            List<PopupMenuBar> menu = new List<PopupMenuBar>();
+            List<Tile> attackableTiles = new List<Tile>();
+            int tileX = 0;
+            int tileY = 0;
+
+            bool hasChar = false;
+            bool canAttack = false;
+
+            //Loop through map to find selectedTile
+            for (int y = 0; y < map.GetLength(0); y++)
+            {
+                for (int x = 0; x < map.GetLength(1); x++)
+                {
+                    if (map[y, x] == selectedTile)
+                    {
+                        tileX = x;
+                        tileY = y;
+                    }
+                }
+            }
+
+            if (selectedTile.charOnTile != null)
+            {
+                hasChar = true;
+                Character ch = selectedTile.charOnTile;
+                //Tile has character
+
+                if (ch.equipedWeapon != null)
+                {
+                    for (int i = ch.equipedWeapon.minRange; i < ch.equipedWeapon.maxRange; i++)
+                    {
+                        //Check if tiles in range have characters
+                    }
+                }
+            }
+
+            return menu;
         }
     }
 }

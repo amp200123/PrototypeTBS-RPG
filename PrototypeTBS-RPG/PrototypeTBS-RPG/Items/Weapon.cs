@@ -25,6 +25,9 @@ namespace PrototypeTBS_RPG
         public weaponType weakness { get; protected set; }
         public weaponType advantage { get; protected set; }
 
-
+        public int damage { get; protected set; }
+        public int crit { get; protected set; }
+        public int minRange { get; protected set; }
+        public int maxRange { get; protected set; }
     }
 }
