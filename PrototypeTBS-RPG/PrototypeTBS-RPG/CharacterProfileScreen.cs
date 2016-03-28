@@ -24,6 +24,10 @@ namespace PrototypeTBS_RPG
             largeFont = content.Load<SpriteFont>("ProfileLargeFont");
         }
 
+        public override void Update(GameTime gameTime)
+        {
+        }
+
         public override void Draw(GameTime gameTime, SpriteBatch spritebatch)
         {
             //TODO: add background or something to style it up
