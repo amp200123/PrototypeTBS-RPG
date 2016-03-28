@@ -7,9 +7,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace PrototypeTBS_RPG
 {
+    enum Alliances
+    {
+        player,
+        enemy
+    }
+
     class Character
     {
         public Random random;
+        public Alliances alliance { get; private set; }
         public Specialization spec { get; private set; }
         public List<Item> inventory { get; private set; }
         public Weapon equipedWeapon { get; private set; }
@@ -40,9 +47,10 @@ namespace PrototypeTBS_RPG
         public int resistanceChance { get; private set; }
 
 
-        public Character(string name, Specialization spec) //Level 1 char
+        public Character(string name, Specialization spec, Alliances alliance) //Level 1 char
         {
             random = new Random();
+            this.alliance = alliance;
             this.spec = spec;
             this.name = name;
 

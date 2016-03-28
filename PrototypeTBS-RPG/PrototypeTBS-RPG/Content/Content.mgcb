@@ -60,7 +60,13 @@
 /processorParam:TextureFormat=Color
 /build:Misc/MenuBar.png
 
-#begin Misc/SelectedTile.png
+#begin Fonts/MenuBarFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/MenuBarFont.spritefont
+
+#begin Tiles/AttackableTile.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -69,11 +75,28 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:TextureFormat=Color
-/build:Misc/SelectedTile.png
+/build:Tiles/AttackableTile.png
 
-#begin Fonts/MenuBarFont.spritefont
+#begin Tiles/SelectedTile.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:TextureFormat=Color
+/build:Tiles/SelectedTile.png
+
+#begin Fonts/ProfileDescriptionFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:TextureFormat=Compressed
-/build:Fonts/MenuBarFont.spritefont
+/build:Fonts/ProfileDescriptionFont.spritefont
+
+#begin Fonts/ProfileLargeFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/ProfileLargeFont.spritefont
 

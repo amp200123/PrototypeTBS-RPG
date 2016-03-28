@@ -39,6 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Character.cs" />
+    <Compile Include="CharacterProfileScreen.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GameScreen.cs" />
@@ -67,7 +68,8 @@
     <Content Include="Content\Levels\testLevel.txt" />
     <Content Include="Content\Misc\MenuBar-Selected.png" />
     <Content Include="Content\Misc\MenuBar.png" />
-    <Content Include="Content\Misc\SelectedTile.png" />
+    <Content Include="Content\Tiles\AttackableTile.png" />
+    <Content Include="Content\Tiles\SelectedTile.png" />
     <Content Include="Content\Sprites\Knight.png" />
     <Content Include="Content\Tiles\Plain.png" />
     <Content Include="Icon.ico" />
@@ -77,6 +79,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\Fonts\MenuBarFont.spritefont" />
+    <None Include="Content\Fonts\ProfileDescriptionFont.spritefont" />
+    <None Include="Content\Fonts\ProfileLargeFont.spritefont" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />

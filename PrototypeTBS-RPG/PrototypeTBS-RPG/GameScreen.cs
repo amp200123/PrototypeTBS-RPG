@@ -11,14 +11,23 @@ using PrototypeTBS_RPG.Specializations;
 
 namespace PrototypeTBS_RPG
 {
+
     class GameScreen : Screen
     {
         public Tile[,] map { get; private set; }
 
         private Character characterA;
-        private Tile selectedTile;
+        private Character characterB;
+
+        private ContentManager content;
         private List<PopupMenuBar> menuItems;
-        private bool renderMenu;
+
+        private bool movingScreen = false;
+        private bool renderMenu = false;
+        private bool renderAttackMenu = false;
+
+        private Tile selectedTile;
+        private List<Tile> attackableTiles;
 
         private MouseState oldMouseState;
         private KeyboardState oldKeyState;
@@ -26,12 +35,15 @@ namespace PrototypeTBS_RPG
         public GameScreen(ContentManager content, EventHandler screenEvent, string fileName)
             : base(screenEvent)
         {
+            this.content = content;
+
             oldKeyState = Keyboard.GetState();
             oldMouseState = Mouse.GetState();
 
             menuItems = new List<PopupMenuBar>();
 
-            characterA = new Character("Character A", new Knight(content));
+            characterA = new Character("Char A", new Knight(content), Alliances.player);
+            characterB = new Character("Char B", new Knight(content), Alliances.enemy);
 
             Tile plain = new Tile(content,content.Load<Texture2D>("Tiles/Plain"), 0, 0, 0);
 
@@ -67,6 +79,7 @@ namespace PrototypeTBS_RPG
             }
 
             map[1, 1].charOnTile = characterA;
+            map[1, 2].charOnTile = characterB;
         }
 
         public override void Update(GameTime gametime)
@@ -74,29 +87,57 @@ namespace PrototypeTBS_RPG
             MouseState newMouseState = Mouse.GetState();
             KeyboardState newKeyState = Keyboard.GetState();
 
-            bool hasSelectedTile = false;
+            //Tile selection stuff
+
+            selectedTile = null;
             foreach (Tile tile in map)
             {
-                if (newMouseState.X <= tile.boundingRectangle.Right && newMouseState.X > tile.boundingRectangle.Left &&
+                if (!renderMenu &&
+                    newMouseState.X <= tile.boundingRectangle.Right && newMouseState.X > tile.boundingRectangle.Left &&
                     newMouseState.Y <= tile.boundingRectangle.Bottom && newMouseState.Y > tile.boundingRectangle.Top)
                 {
                     tile.isSelected = true;
                     selectedTile = tile;
-                    hasSelectedTile = true;
                 }
                 else tile.isSelected = false;
             }
 
-            if (!hasSelectedTile)
-                selectedTile = null;
+            //Menu selection stuff
+
+            PopupMenuBar selectedMenu = null;
+            foreach (PopupMenuBar menuItem in menuItems)
+            {
+                if (renderMenu &&
+                    newMouseState.X <= menuItem.boundingRectangle.Right && newMouseState.X > menuItem.boundingRectangle.Left &&
+                    newMouseState.Y <= menuItem.boundingRectangle.Bottom && newMouseState.Y > menuItem.boundingRectangle.Top)
+                {
+                    menuItem.isSelected = true;
+                    selectedMenu = menuItem;
+                }
+                else menuItem.isSelected = false;
+            }
+
+
+            //Clicking input
 
             if (oldMouseState.LeftButton == ButtonState.Pressed && newMouseState.LeftButton == ButtonState.Released)
             {
-                if (hasSelectedTile)
+                if (selectedTile != null && !renderMenu && !movingScreen)
                 {
                     renderMenu = true;
-                    menuItems = GetMenu();
+                    GetMenu();
                 }
+
+                if (selectedMenu != null && renderMenu)
+                {
+                    selectedMenu.MenuEvent();
+                }
+            }
+
+            if (oldMouseState.RightButton == ButtonState.Pressed && newMouseState.RightButton == ButtonState.Released)
+            {
+                if (renderMenu)
+                    renderMenu = false;
             }
 
             //Keyboard input
@@ -120,10 +161,15 @@ namespace PrototypeTBS_RPG
             //Drag movement input
             if (!renderMenu && newMouseState.Position.X <= Game1.WINDOW_WIDTH && newMouseState.Position.X >= 0 &&
                 newMouseState.Position.Y <= Game1.WINDOW_HEIGHT && newMouseState.Position.Y >= 0 &&
-                newMouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Pressed)
+                newMouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Pressed &&
+                newMouseState.Position != oldMouseState.Position)
             {
+                movingScreen = true;
                 MoveScreen((newMouseState.Position - oldMouseState.Position).ToVector2());
             }
+
+            if (newMouseState.LeftButton == ButtonState.Released)
+                movingScreen = false;
 
             oldMouseState = newMouseState;
             oldKeyState = newKeyState;
@@ -134,6 +180,14 @@ namespace PrototypeTBS_RPG
             foreach (Tile tile in map)
             {
                 tile.Draw(spritebatch);
+            }
+
+            if (renderMenu)
+            {
+                foreach (PopupMenuBar menuBar in menuItems)
+                {
+                    menuBar.Draw(spritebatch);
+                }
             }
         }
 
@@ -195,7 +249,7 @@ namespace PrototypeTBS_RPG
             else throw new FileNotFoundException();
         }
 
-        private List<PopupMenuBar> GetMenu()
+        private void GetMenu()
         {
             List<PopupMenuBar> menu = new List<PopupMenuBar>();
             List<Tile> attackableTiles = new List<Tile>();
@@ -205,7 +259,7 @@ namespace PrototypeTBS_RPG
             bool hasChar = false;
             bool canAttack = false;
 
-            //Loop through map to find selectedTile
+            //Loop through map to find selectedTile in map
             for (int y = 0; y < map.GetLength(0); y++)
             {
                 for (int x = 0; x < map.GetLength(1); x++)
@@ -221,19 +275,116 @@ namespace PrototypeTBS_RPG
             if (selectedTile.charOnTile != null)
             {
                 hasChar = true;
-                Character ch = selectedTile.charOnTile;
+                Weapon eqWpn = selectedTile.charOnTile.equipedWeapon;
                 //Tile has character
 
-                if (ch.equipedWeapon != null)
+                if (eqWpn != null)
                 {
-                    for (int i = ch.equipedWeapon.minRange; i < ch.equipedWeapon.maxRange; i++)
+                    //Character has a weapon
+                    for (int i = eqWpn.minRange; i <= eqWpn.maxRange; i++)
                     {
                         //Check if tiles in range have characters
+
+                        if (tileY + i <= map.GetLength(0) - 1)
+                        {
+                            if (tileX + i <= map.GetLength(1) - 1)
+                            {
+                                if (map[tileY + i, tileX + i].charOnTile != null)
+                                    if (map[tileY + i, tileX + i].charOnTile.alliance == Alliances.enemy)
+                                        attackableTiles.Add(map[tileY + i, tileX + i]);
+                            }
+
+                            if (tileX - i >= 0)
+                            {
+                                if (map[tileY + i, tileX - i].charOnTile != null)
+                                    if (map[tileY + i, tileX - i].charOnTile.alliance == Alliances.enemy)
+                                        attackableTiles.Add(map[tileY + i, tileX - i]);
+                            }
+                        }
+
+                        if (tileY - i >= 0)
+                        {
+                            if (tileX + i <= map.GetLength(1) - 1)
+                            {
+                                if (map[tileY - i, tileX + i].charOnTile != null)
+                                    if (map[tileY - i, tileX + i].charOnTile.alliance == Alliances.enemy)
+                                        attackableTiles.Add(map[tileY - i, tileX + i]);
+                            }
+
+                            if (tileX - i >= 0)
+                            {
+                                if (map[tileY - i, tileX - i].charOnTile != null)
+                                    if (map[tileY - i, tileX - i].charOnTile.alliance == Alliances.enemy)
+                                        attackableTiles.Add(map[tileY - i, tileX - i]);
+                            }
+                        }
+
+                        //Check if diagonals need to be checked
+                        if (i > 1)
+                        {
+                            //Check diagonals
+                        }
+
+                        if (attackableTiles.Count > 0)
+                            canAttack = true;
+                        
+                        this.attackableTiles = attackableTiles;
                     }
                 }
             }
 
-            return menu;
+            if (canAttack)
+                menu.Add(new PopupMenuBar(content, "Attack", new EventHandler(AttackMenuEvent)));
+
+            if (hasChar)
+                menu.Add(new PopupMenuBar(content, selectedTile.charOnTile.name, new EventHandler(ProfileMenuEvent)));
+
+            menu.Add(new PopupMenuBar(content, "Options", new EventHandler(OptionsMenuEvent)));
+            menu.Add(new PopupMenuBar(content, "End Turn", new EventHandler(EndTurnMenuEvent)));
+            menu.Add(new PopupMenuBar(content, "Quit", new EventHandler(QuitMenuEvent)));
+
+            for (int i = 0; i < menu.Count; i++)
+            {
+                menu[i].position.X = Game1.WINDOW_WIDTH - 80;
+                menu[i].position.Y = 30 + 60 * i;
+            }
+
+            menuItems = menu;
+        }
+
+        private void AttackMenuEvent(object sender, EventArgs e)
+        {
+            renderAttackMenu =true;
+            renderMenu = false;
+
+            foreach (Tile tile in map)
+            {
+                foreach (Tile atkTile in attackableTiles)
+                {
+                    if (tile == atkTile)
+                        tile.attackable = true;
+                }
+            }
+        }
+
+        private void ProfileMenuEvent(object sender, EventArgs e)
+        {
+
+        }
+
+        private void OptionsMenuEvent(object sender, EventArgs e)
+        {
+
+        }
+
+        private void EndTurnMenuEvent(object sender, EventArgs e)
+        {
+
+        }
+
+        private void QuitMenuEvent(object sender, EventArgs e)
+        {
+            Environment.Exit(1);
         }
     }
 }
