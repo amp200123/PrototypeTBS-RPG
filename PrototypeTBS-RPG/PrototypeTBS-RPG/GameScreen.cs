@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using PrototypeTBS_RPG.Specializations;
+using PrototypeTBS_RPG.Items;
 
 namespace PrototypeTBS_RPG
 {
@@ -15,6 +16,9 @@ namespace PrototypeTBS_RPG
     class GameScreen : Screen
     {
         public Tile[,] map { get; private set; }
+        public Tile selectedTile { get; private set; }
+        public Tile menuTile { get; private set; }
+        public string eventAction { get; private set; }
 
         private Character characterA;
         private Character characterB;
@@ -25,8 +29,8 @@ namespace PrototypeTBS_RPG
         private bool movingScreen = false;
         private bool renderMenu = false;
         private bool renderAttackMenu = false;
+        private bool playerTurn = true;
 
-        private Tile selectedTile;
         private List<Tile> attackableTiles;
 
         private MouseState oldMouseState;
@@ -42,8 +46,11 @@ namespace PrototypeTBS_RPG
 
             menuItems = new List<PopupMenuBar>();
 
-            characterA = new Character("Char A", new Knight(content), Alliances.player);
-            characterB = new Character("Char B", new Knight(content), Alliances.enemy);
+            characterA = new Character("Char A", new Knight(content), alliances.player);
+            Sword swordA = new Sword(content.Load<Texture2D>("Weapons/IronSword"), "Iron Sword", 4, 0, 100);
+            characterA.inventory.Add(swordA);
+            characterA.Equip(swordA);
+            characterB = new Character("Char B", new Knight(content), alliances.enemy);
 
             Tile plain = new Tile(content,content.Load<Texture2D>("Tiles/Plain"), 0, 0, 0);
 
@@ -89,17 +96,19 @@ namespace PrototypeTBS_RPG
 
             //Tile selection stuff
 
-            selectedTile = null;
-            foreach (Tile tile in map)
+            if (!renderMenu)
             {
-                if (!renderMenu &&
-                    newMouseState.X <= tile.boundingRectangle.Right && newMouseState.X > tile.boundingRectangle.Left &&
-                    newMouseState.Y <= tile.boundingRectangle.Bottom && newMouseState.Y > tile.boundingRectangle.Top)
+                selectedTile = null;
+                foreach (Tile tile in map)
                 {
-                    tile.isSelected = true;
-                    selectedTile = tile;
+                    if (newMouseState.X <= tile.boundingRectangle.Right && newMouseState.X > tile.boundingRectangle.Left &&
+                        newMouseState.Y <= tile.boundingRectangle.Bottom && newMouseState.Y > tile.boundingRectangle.Top)
+                    {
+                        tile.isSelected = true;
+                        selectedTile = tile;
+                    }
+                    else tile.isSelected = false;
                 }
-                else tile.isSelected = false;
             }
 
             //Menu selection stuff
@@ -122,10 +131,15 @@ namespace PrototypeTBS_RPG
 
             if (oldMouseState.LeftButton == ButtonState.Pressed && newMouseState.LeftButton == ButtonState.Released)
             {
-                if (selectedTile != null && !renderMenu && !movingScreen)
+                if (selectedTile != null && !renderMenu && !renderAttackMenu && !movingScreen)
                 {
+                    menuTile = selectedTile;
                     renderMenu = true;
                     GetMenu();
+                }
+                else if (renderAttackMenu)
+                {
+                    //Do attack things
                 }
 
                 if (selectedMenu != null && renderMenu)
@@ -137,26 +151,32 @@ namespace PrototypeTBS_RPG
             if (oldMouseState.RightButton == ButtonState.Pressed && newMouseState.RightButton == ButtonState.Released)
             {
                 if (renderMenu)
+                {
                     renderMenu = false;
+                    menuTile = null;
+                }
+
+                if (renderAttackMenu)
+                {
+                    renderAttackMenu = false;
+
+                    foreach (Tile tile in attackableTiles)
+                    {
+                        tile.attackable = false;
+                    }
+                    attackableTiles = new List<Tile>();
+                }
             }
 
             //Keyboard input
             if (newKeyState.IsKeyDown(Keys.Up))
-            {
-                MoveScreen(0, 3);
-            }
-            if (newKeyState.IsKeyDown(Keys.Down))
-            {
                 MoveScreen(0, -3);
-            }
+            if (newKeyState.IsKeyDown(Keys.Down))
+                MoveScreen(0, 3);
             if (newKeyState.IsKeyDown(Keys.Left))
-            {
-                MoveScreen(3, 0);
-            }
-            if (newKeyState.IsKeyDown(Keys.Right))
-            {
                 MoveScreen(-3, 0);
-            }
+            if (newKeyState.IsKeyDown(Keys.Right))
+                MoveScreen(3, 0);
 
             //Drag movement input
             if (!renderMenu && newMouseState.Position.X <= Game1.WINDOW_WIDTH && newMouseState.Position.X >= 0 &&
@@ -278,7 +298,7 @@ namespace PrototypeTBS_RPG
                 Weapon eqWpn = selectedTile.charOnTile.equipedWeapon;
                 //Tile has character
 
-                if (eqWpn != null)
+                if (eqWpn != null && selectedTile.charOnTile.alliance == alliances.player)
                 {
                     //Character has a weapon
                     for (int i = eqWpn.minRange; i <= eqWpn.maxRange; i++)
@@ -286,38 +306,24 @@ namespace PrototypeTBS_RPG
                         //Check if tiles in range have characters
 
                         if (tileY + i <= map.GetLength(0) - 1)
-                        {
-                            if (tileX + i <= map.GetLength(1) - 1)
-                            {
-                                if (map[tileY + i, tileX + i].charOnTile != null)
-                                    if (map[tileY + i, tileX + i].charOnTile.alliance == Alliances.enemy)
-                                        attackableTiles.Add(map[tileY + i, tileX + i]);
-                            }
-
-                            if (tileX - i >= 0)
-                            {
-                                if (map[tileY + i, tileX - i].charOnTile != null)
-                                    if (map[tileY + i, tileX - i].charOnTile.alliance == Alliances.enemy)
-                                        attackableTiles.Add(map[tileY + i, tileX - i]);
-                            }
-                        }
+                            if (map[tileY + i, tileX].charOnTile != null)
+                                if (map[tileY + i, tileX].charOnTile.alliance == alliances.enemy)
+                                    attackableTiles.Add(map[tileY + i, tileX]);
 
                         if (tileY - i >= 0)
-                        {
-                            if (tileX + i <= map.GetLength(1) - 1)
-                            {
-                                if (map[tileY - i, tileX + i].charOnTile != null)
-                                    if (map[tileY - i, tileX + i].charOnTile.alliance == Alliances.enemy)
-                                        attackableTiles.Add(map[tileY - i, tileX + i]);
-                            }
+                            if (map[tileY - i, tileX].charOnTile != null)
+                                if (map[tileY - i, tileX].charOnTile.alliance == alliances.enemy)
+                                    attackableTiles.Add(map[tileY - i, tileX]);
 
-                            if (tileX - i >= 0)
-                            {
-                                if (map[tileY - i, tileX - i].charOnTile != null)
-                                    if (map[tileY - i, tileX - i].charOnTile.alliance == Alliances.enemy)
-                                        attackableTiles.Add(map[tileY - i, tileX - i]);
-                            }
-                        }
+                        if (tileX + i <= map.GetLength(1) - 1)
+                            if (map[tileY, tileX + i].charOnTile != null)
+                                if (map[tileY, tileX + i].charOnTile.alliance == alliances.enemy)
+                                    attackableTiles.Add(map[tileY, tileX + i]);
+
+                        if (tileX - i >= 0)
+                            if (map[tileY, tileX - i].charOnTile != null)
+                                if (map[tileY, tileX - i].charOnTile.alliance == alliances.enemy)
+                                    attackableTiles.Add(map[tileY, tileX - i]);
 
                         //Check if diagonals need to be checked
                         if (i > 1)
@@ -354,7 +360,7 @@ namespace PrototypeTBS_RPG
 
         private void AttackMenuEvent(object sender, EventArgs e)
         {
-            renderAttackMenu =true;
+            renderAttackMenu = true;
             renderMenu = false;
 
             foreach (Tile tile in map)
@@ -369,7 +375,9 @@ namespace PrototypeTBS_RPG
 
         private void ProfileMenuEvent(object sender, EventArgs e)
         {
-
+            renderMenu = false;
+            eventAction = "profile";
+            screenEvent.Invoke(this, new EventArgs());
         }
 
         private void OptionsMenuEvent(object sender, EventArgs e)

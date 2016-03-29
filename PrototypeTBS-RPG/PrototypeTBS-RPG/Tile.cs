@@ -14,11 +14,30 @@ namespace PrototypeTBS_RPG
         public int defense { get; private set; }
         public int health { get; private set; }
         public int movement { get; private set; }
+        public Character charOnTile 
+        {
+            get
+            {
+                return character;
+            }
 
-        public Character charOnTile;
+            set
+            {
+                if (character != null)
+                    character.tile = null;
+                if (value != null)
+                {
+                    character = value;
+                    character.tile = this;
+                }
+                else character = null;
+            }
+        }
+
         public bool isSelected;
         public bool attackable;
 
+        private Character character;
         private Texture2D selectedTile;
         private Texture2D attackableTile;
 

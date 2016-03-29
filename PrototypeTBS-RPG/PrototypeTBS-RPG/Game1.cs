@@ -94,7 +94,23 @@ namespace PrototypeTBS_RPG
 
         private void GameScreenEvent(object sender, EventArgs e)
         {
+            switch ((sender as GameScreen).eventAction)
+            {
+                case ("profile"):
+                    gameScreen = sender as GameScreen;
+                    currentScreen = new CharacterProfileScreen((sender as GameScreen).menuTile.charOnTile, Content,
+                        new EventHandler(CharacterProfileScreenEvent));
+                    break;
 
+                default:
+
+                    break;
+            }
+        }
+
+        private void CharacterProfileScreenEvent(object sender, EventArgs e)
+        {
+            currentScreen = gameScreen;
         }
     }
 }

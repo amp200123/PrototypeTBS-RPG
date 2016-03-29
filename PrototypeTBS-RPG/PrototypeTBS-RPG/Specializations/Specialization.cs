@@ -71,12 +71,17 @@ namespace PrototypeTBS_RPG
             this.defence = defence;
             this.resistance = resistance;
             this.movement = movement;
+
+            weaponProfs = new List<weaponType>();
+            promotions = new List<specializations>();
         }
 
-        public void Draw(SpriteBatch spritebatch, Vector2 position)
+        public void Draw(SpriteBatch spritebatch, Vector2 position, Color color)
         {
-            spritebatch.Draw(sprite, position, new Rectangle(0, 0, sprite.Width, sprite.Height), Color.White, 0,
+            spritebatch.Draw(sprite, position, new Rectangle(0, 0, sprite.Width, sprite.Height), color, 0,
                     new Vector2(sprite.Width / 2, sprite.Height / 2), 1, SpriteEffects.None, 1);
         }
+
+        public abstract override string ToString();
     }
 }
