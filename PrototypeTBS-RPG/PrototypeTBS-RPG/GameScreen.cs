@@ -12,6 +12,14 @@ using PrototypeTBS_RPG.Items;
 
 namespace PrototypeTBS_RPG
 {
+    enum turnStatus
+    {
+        beforePlayer,
+        player,
+        beforeEnemy,
+        enemy,
+        none
+    }
 
     class GameScreen : Screen
     {
@@ -20,18 +28,21 @@ namespace PrototypeTBS_RPG
         public Tile menuTile { get; private set; }
         public string eventAction { get; private set; }
 
+        private List<Character> characters;
         private Character characterA;
         private Character characterB;
 
         private ContentManager content;
         private List<PopupMenuBar> menuItems;
 
+        private turnStatus turn = turnStatus.beforePlayer;
         private bool movingScreen = false;
         private bool renderMenu = false;
         private bool renderAttackMenu = false;
-        private bool playerTurn = true;
+        private bool renderMoveMenu = false;
 
         private List<Tile> attackableTiles;
+        private List<Character> deadCharacters;
 
         private MouseState oldMouseState;
         private KeyboardState oldKeyState;
@@ -45,14 +56,17 @@ namespace PrototypeTBS_RPG
             oldMouseState = Mouse.GetState();
 
             menuItems = new List<PopupMenuBar>();
+            characters = new List<Character>();
+            deadCharacters = new List<Character>();
 
-            characterA = new Character("Char A", new Knight(content), alliances.player);
+            characterA = new Character(content, "Char A", new Knight(content), alliances.player);
             Sword swordA = new Sword(content.Load<Texture2D>("Weapons/IronSword"), "Iron Sword", 4, 0, 100);
             characterA.inventory.Add(swordA);
             characterA.Equip(swordA);
-            characterB = new Character("Char B", new Knight(content), alliances.enemy);
+            characterB = new Character(content, "Char B", new Knight(content), alliances.enemy);
 
-            Tile plain = new Tile(content,content.Load<Texture2D>("Tiles/Plain"), 0, 0, 0);
+            characters.Add(characterA);
+            characters.Add(characterB);
 
             map = ImportLevel(content, fileName);
 
@@ -91,108 +105,28 @@ namespace PrototypeTBS_RPG
 
         public override void Update(GameTime gametime)
         {
-            MouseState newMouseState = Mouse.GetState();
-            KeyboardState newKeyState = Keyboard.GetState();
-
-            //Tile selection stuff
-
-            if (!renderMenu)
+            switch (turn)
             {
-                selectedTile = null;
-                foreach (Tile tile in map)
-                {
-                    if (newMouseState.X <= tile.boundingRectangle.Right && newMouseState.X > tile.boundingRectangle.Left &&
-                        newMouseState.Y <= tile.boundingRectangle.Bottom && newMouseState.Y > tile.boundingRectangle.Top)
-                    {
-                        tile.isSelected = true;
-                        selectedTile = tile;
-                    }
-                    else tile.isSelected = false;
-                }
+                case (turnStatus.beforePlayer):
+                    BeforePlayerTurn();
+                    break;
+
+                case (turnStatus.player):
+                    PlayerTurnUpdate(gametime);
+                    break;
+
+                case (turnStatus.beforeEnemy):
+                    BeforeEnemyTurn();
+                    break;
+
+                case (turnStatus.enemy):
+                    EnemyTurnUpdate(gametime);
+                    break;
+
+                default:
+                    turn = turnStatus.beforePlayer;
+                    break;
             }
-
-            //Menu selection stuff
-
-            PopupMenuBar selectedMenu = null;
-            foreach (PopupMenuBar menuItem in menuItems)
-            {
-                if (renderMenu &&
-                    newMouseState.X <= menuItem.boundingRectangle.Right && newMouseState.X > menuItem.boundingRectangle.Left &&
-                    newMouseState.Y <= menuItem.boundingRectangle.Bottom && newMouseState.Y > menuItem.boundingRectangle.Top)
-                {
-                    menuItem.isSelected = true;
-                    selectedMenu = menuItem;
-                }
-                else menuItem.isSelected = false;
-            }
-
-
-            //Clicking input
-
-            if (oldMouseState.LeftButton == ButtonState.Pressed && newMouseState.LeftButton == ButtonState.Released)
-            {
-                if (selectedTile != null && !renderMenu && !renderAttackMenu && !movingScreen)
-                {
-                    menuTile = selectedTile;
-                    renderMenu = true;
-                    GetMenu();
-                }
-                else if (renderAttackMenu)
-                {
-                    //Do attack things
-                }
-
-                if (selectedMenu != null && renderMenu)
-                {
-                    selectedMenu.MenuEvent();
-                }
-            }
-
-            if (oldMouseState.RightButton == ButtonState.Pressed && newMouseState.RightButton == ButtonState.Released)
-            {
-                if (renderMenu)
-                {
-                    renderMenu = false;
-                    menuTile = null;
-                }
-
-                if (renderAttackMenu)
-                {
-                    renderAttackMenu = false;
-
-                    foreach (Tile tile in attackableTiles)
-                    {
-                        tile.attackable = false;
-                    }
-                    attackableTiles = new List<Tile>();
-                }
-            }
-
-            //Keyboard input
-            if (newKeyState.IsKeyDown(Keys.Up))
-                MoveScreen(0, -3);
-            if (newKeyState.IsKeyDown(Keys.Down))
-                MoveScreen(0, 3);
-            if (newKeyState.IsKeyDown(Keys.Left))
-                MoveScreen(-3, 0);
-            if (newKeyState.IsKeyDown(Keys.Right))
-                MoveScreen(3, 0);
-
-            //Drag movement input
-            if (!renderMenu && newMouseState.Position.X <= Game1.WINDOW_WIDTH && newMouseState.Position.X >= 0 &&
-                newMouseState.Position.Y <= Game1.WINDOW_HEIGHT && newMouseState.Position.Y >= 0 &&
-                newMouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Pressed &&
-                newMouseState.Position != oldMouseState.Position)
-            {
-                movingScreen = true;
-                MoveScreen((newMouseState.Position - oldMouseState.Position).ToVector2());
-            }
-
-            if (newMouseState.LeftButton == ButtonState.Released)
-                movingScreen = false;
-
-            oldMouseState = newMouseState;
-            oldKeyState = newKeyState;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spritebatch)
@@ -254,6 +188,9 @@ namespace PrototypeTBS_RPG
                             case ('p'):
                                 tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), 0, 0, 0);
                                 break;
+                            case ('f'):
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Forest"), 4, 0, 1);
+                                break;
                             default:
                                 tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), 0, 0, 0);
                                 break;
@@ -298,9 +235,9 @@ namespace PrototypeTBS_RPG
                 Weapon eqWpn = selectedTile.charOnTile.equipedWeapon;
                 //Tile has character
 
-                if (eqWpn != null && selectedTile.charOnTile.alliance == alliances.player)
+                if (eqWpn != null && selectedTile.charOnTile.alliance == alliances.player && selectedTile.charOnTile.active)
                 {
-                    //Character has a weapon
+                    //Character has a weapon, is a player unit, and is active
                     for (int i = eqWpn.minRange; i <= eqWpn.maxRange; i++)
                     {
                         //Check if tiles in range have characters
@@ -343,7 +280,11 @@ namespace PrototypeTBS_RPG
                 menu.Add(new PopupMenuBar(content, "Attack", new EventHandler(AttackMenuEvent)));
 
             if (hasChar)
+            {
+                if (selectedTile.charOnTile.alliance == alliances.player && selectedTile.charOnTile.canMove)
+                    menu.Add(new PopupMenuBar(content, "Move", new EventHandler(MoveMenuEvent)));
                 menu.Add(new PopupMenuBar(content, selectedTile.charOnTile.name, new EventHandler(ProfileMenuEvent)));
+            }
 
             menu.Add(new PopupMenuBar(content, "Options", new EventHandler(OptionsMenuEvent)));
             menu.Add(new PopupMenuBar(content, "End Turn", new EventHandler(EndTurnMenuEvent)));
@@ -356,6 +297,52 @@ namespace PrototypeTBS_RPG
             }
 
             menuItems = menu;
+        }
+
+        private void MoveMenuEvent(object sender, EventArgs e)
+        {
+            renderMenu = false;
+            renderMoveMenu = true;
+
+            int selectedX = 0;
+            int selectedY = 0;
+
+            //TODO ; Overhall this into pathfinding
+
+            //Find index of tile
+                for (int y = 0; y < map.GetLength(0); y++)
+                {
+                    for (int x = 0; x < map.GetLength(1); x++)
+                    {
+                        if (map[y, x] == selectedTile)
+                        {
+                            selectedX = x;
+                            selectedY = y;
+                        }
+                    }
+                }
+
+            foreach (Tile tile in map)
+            {
+                int tileX = 0;
+                int tileY = 0;
+
+                //Find index of tile
+                for (int y = 0; y < map.GetLength(0); y++)
+                {
+                    for (int x = 0; x < map.GetLength(1); x++)
+                    {
+                        if (map[y, x].Equals(tile))
+                        {
+                            tileY = y;
+                            tileX = x;
+                        }
+                    }
+                }
+
+                if (selectedTile.charOnTile.movement >= Math.Abs(tileX - selectedX) + Math.Abs(tileY - selectedY))
+                    tile.movable = true;
+            }
         }
 
         private void AttackMenuEvent(object sender, EventArgs e)
@@ -387,12 +374,199 @@ namespace PrototypeTBS_RPG
 
         private void EndTurnMenuEvent(object sender, EventArgs e)
         {
-
+            renderMenu = false;
+            turn = turnStatus.beforeEnemy;
         }
 
         private void QuitMenuEvent(object sender, EventArgs e)
         {
             Environment.Exit(1);
+        }
+
+        private void BeforePlayerTurn()
+        {
+            foreach (Character ch in characters)
+            {
+                ch.active = true;
+                ch.canMove = true;
+            }
+
+            turn = turnStatus.player;
+        }
+
+        private void PlayerTurnUpdate(GameTime gametime)
+        {
+            MouseState newMouseState = Mouse.GetState();
+            KeyboardState newKeyState = Keyboard.GetState();
+
+            //Tile selection stuff
+
+            if (!renderMenu)
+            {
+                selectedTile = null;
+                foreach (Tile tile in map)
+                {
+                    if (newMouseState.X <= tile.boundingRectangle.Right && newMouseState.X > tile.boundingRectangle.Left &&
+                        newMouseState.Y <= tile.boundingRectangle.Bottom && newMouseState.Y > tile.boundingRectangle.Top)
+                    {
+                        tile.isSelected = true;
+                        selectedTile = tile;
+                    }
+                    else tile.isSelected = false;
+                }
+            }
+
+            //Menu selection stuff
+
+            PopupMenuBar selectedMenu = null;
+            foreach (PopupMenuBar menuItem in menuItems)
+            {
+                if (renderMenu &&
+                    newMouseState.X <= menuItem.boundingRectangle.Right && newMouseState.X > menuItem.boundingRectangle.Left &&
+                    newMouseState.Y <= menuItem.boundingRectangle.Bottom && newMouseState.Y > menuItem.boundingRectangle.Top)
+                {
+                    menuItem.isSelected = true;
+                    selectedMenu = menuItem;
+                }
+                else menuItem.isSelected = false;
+            }
+
+
+            //Clicking input
+
+            if (oldMouseState.LeftButton == ButtonState.Pressed && newMouseState.LeftButton == ButtonState.Released)
+            {
+                if (selectedTile != null && !renderMenu && !renderAttackMenu && !renderMoveMenu && !movingScreen)
+                {
+                    menuTile = selectedTile;
+                    renderMenu = true;
+                    GetMenu();
+                }
+                else if (selectedMenu != null && renderMenu)
+                {
+                    selectedMenu.MenuEvent();
+                }
+                else if (renderAttackMenu)
+                {
+                    Character attacker = menuTile.charOnTile;
+                    Character defender = selectedTile.charOnTile;
+
+                    if (attacker.Attack(defender))
+                        deadCharacters.Add(defender);
+                    else if (defender.Attack(attacker))
+                        deadCharacters.Add(attacker);
+                    else if (attacker.speed >= defender.speed + 5)
+                    {
+                        if (attacker.Attack(defender))
+                            deadCharacters.Add(defender);
+                    }
+                    else if (defender.speed >= attacker.speed + 5)
+                    {
+                        if (defender.Attack(attacker))
+                            deadCharacters.Add(attacker);
+                    }
+
+                    attacker.active = false;
+
+                    renderAttackMenu = false; 
+                    foreach (Tile tile in attackableTiles)
+                    {
+                        tile.attackable = false;
+                    }
+                    attackableTiles = new List<Tile>();
+                }
+                else if (renderMoveMenu)
+                {
+                    if (selectedTile.movable)
+                    {
+                        selectedTile.charOnTile = menuTile.charOnTile;
+                        selectedTile.charOnTile.canMove = false; 
+
+                        renderMoveMenu = false;
+
+                        foreach (Tile tile in map)
+                        {
+                            if (tile.movable)
+                                tile.movable = false;
+                        }
+                    }
+                }
+            }
+
+            if (oldMouseState.RightButton == ButtonState.Pressed && newMouseState.RightButton == ButtonState.Released)
+            {
+                if (renderMenu)
+                {
+                    renderMenu = false;
+                    menuTile = null;
+                }
+                else if (renderAttackMenu)
+                {
+                    renderAttackMenu = false;
+
+                    foreach (Tile tile in attackableTiles)
+                    {
+                        tile.attackable = false;
+                    }
+                    attackableTiles = new List<Tile>();
+                }
+                else if (renderMoveMenu)
+                {
+                    renderMoveMenu = false;
+
+                    foreach (Tile tile in map)
+                    {
+                        if (tile.movable)
+                            tile.movable = false;
+                    }
+                }
+            }
+
+            //Keyboard input
+            if (newKeyState.IsKeyDown(Keys.Up))
+                MoveScreen(0, -3);
+            if (newKeyState.IsKeyDown(Keys.Down))
+                MoveScreen(0, 3);
+            if (newKeyState.IsKeyDown(Keys.Left))
+                MoveScreen(-3, 0);
+            if (newKeyState.IsKeyDown(Keys.Right))
+                MoveScreen(3, 0);
+
+            //Drag movement input
+            if (!renderMenu && newMouseState.Position.X <= Game1.WINDOW_WIDTH && newMouseState.Position.X >= 0 &&
+                newMouseState.Position.Y <= Game1.WINDOW_HEIGHT && newMouseState.Position.Y >= 0 &&
+                newMouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Pressed &&
+                newMouseState.Position != oldMouseState.Position)
+            {
+                movingScreen = true;
+                MoveScreen((newMouseState.Position - oldMouseState.Position).ToVector2());
+            }
+
+            if (newMouseState.LeftButton == ButtonState.Released)
+                movingScreen = false;
+
+            foreach (Character ch in deadCharacters)
+            {
+                if (ch.tile != null)
+                    ch.tile.charOnTile = null;
+            }
+
+            oldMouseState = newMouseState;
+            oldKeyState = newKeyState;
+        }
+
+        private void BeforeEnemyTurn()
+        {
+
+
+            turn = turnStatus.enemy;
+        }
+
+        private void EnemyTurnUpdate(GameTime gametime)
+        {
+
+
+            turn = turnStatus.beforePlayer;
         }
     }
 }

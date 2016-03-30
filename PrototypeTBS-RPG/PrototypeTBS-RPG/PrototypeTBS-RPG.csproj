@@ -69,9 +69,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Levels\testLevel.txt" />
+    <Content Include="Content\Misc\GrayHealthBar.png" />
     <Content Include="Content\Misc\MenuBar-Selected.png" />
     <Content Include="Content\Misc\MenuBar.png" />
+    <Content Include="Content\Misc\RedHealthBar.png" />
     <Content Include="Content\Tiles\AttackableTile.png" />
+    <Content Include="Content\Tiles\Forest.png" />
+    <Content Include="Content\Tiles\MovableTile.png" />
     <Content Include="Content\Tiles\SelectedTile.png" />
     <Content Include="Content\Sprites\Knight.png" />
     <Content Include="Content\Tiles\Plain.png" />

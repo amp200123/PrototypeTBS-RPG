@@ -34,7 +34,8 @@ namespace PrototypeTBS_RPG
         public int minRange { get; protected set; }
         public int maxRange { get; protected set; }
 
-        public Weapon(Texture2D texture, string name, weaponType type, int damage, int crit, int accuracy, int minRange, int maxRange)
+        public Weapon(Texture2D texture, string name, weaponType type, int damage, int crit, int accuracy,
+            int minRange, int maxRange)
         {
             this.texture = texture;
             this.damage = damage;

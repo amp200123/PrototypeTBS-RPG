@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Content;
 
 namespace PrototypeTBS_RPG
 {
@@ -17,6 +18,8 @@ namespace PrototypeTBS_RPG
     {
         public Random random;
         public Tile tile;
+        public bool canMove;
+        public bool active;
         public alliances alliance { get; private set; }
         public Specialization spec { get; private set; }
         public List<Item> inventory { get; private set; }
@@ -24,19 +27,18 @@ namespace PrototypeTBS_RPG
         public string name { get; private set; }
         public int level { get; private set; }
         public int exp { get; private set; }
-        public bool active { get; private set; }
 
 
         //Stats
         public int currentHp
         {
-            get;
+            get { return CurrentHp; }
 
             set
             {
-                currentHp = value;
-                if (currentHp < 0)
-                    currentHp = 0;
+                CurrentHp = value;
+                if (CurrentHp < 0)
+                    CurrentHp = 0;
             }
         }
         public int hp { get; private set; }
@@ -59,16 +61,22 @@ namespace PrototypeTBS_RPG
         public int defenceChance { get; private set; }
         public int resistanceChance { get; private set; }
 
+        private int CurrentHp;
+        private Texture2D grayHealth, redHealth;
 
-        public Character(string name, Specialization spec, alliances alliance) //Level 1 char
+        public Character(ContentManager content, string name, Specialization spec, alliances alliance) //Level 1 char
         {
             random = new Random();
             inventory = new List<Item>();
+
+            grayHealth = content.Load<Texture2D>("Misc/GrayHealthBar");
+            redHealth = content.Load<Texture2D>("Misc/RedHealthBar");
 
             this.alliance = alliance;
             this.spec = spec;
             this.name = name;
 
+            canMove = true;
             active = true;
             level = 1;
             hp = spec.hp;
@@ -79,6 +87,7 @@ namespace PrototypeTBS_RPG
             luck = spec.luck;
             defence = spec.defence;
             resistance = spec.resistance;
+            movement = spec.movement;
 
             currentHp = hp;
         }
@@ -88,6 +97,15 @@ namespace PrototypeTBS_RPG
             if (active)
                 spec.Draw(spritebatch, position, Color.White);
             else spec.Draw(spritebatch, position, Color.Gray);
+
+            Vector2 hpPos = position + new Vector2(-redHealth.Width / 2, 13);
+
+            spritebatch.Draw(grayHealth, hpPos, new Rectangle(0, 0, grayHealth.Width, grayHealth.Height),
+                Color.White);
+
+            Rectangle redSource = new Rectangle(0, 0, (int)(((float)currentHp / (float)hp) * redHealth.Width),
+                redHealth.Height);
+            spritebatch.Draw(redHealth, hpPos, redSource, Color.White);
         }
 
         private void LevelUp()
@@ -140,7 +158,12 @@ namespace PrototypeTBS_RPG
             }
         }
 
-        public void Attack(Character enemy)
+        /// <summary>
+        /// Orders this unit to attack an enemy. Returns state of the enemy
+        /// </summary>
+        /// <param name="enemy">Enemy character to attack</param>
+        /// <returns>Whether or not the enemy has been killed</returns>
+        public bool Attack(Character enemy)
         {
             if (equipedWeapon != null)
             {
@@ -164,22 +187,28 @@ namespace PrototypeTBS_RPG
 
                     bool crit = random.Next(100) < critChance;
 
-                    float weaponEffectiveness;
+                    float weaponEffectiveness = 1;
 
-                    if (equipedWeapon.advantage == enemy.equipedWeapon.type)
-                        weaponEffectiveness = 2;
-                    else if (equipedWeapon.weakness == enemy.equipedWeapon.type)
-                        weaponEffectiveness = 0.5f;
-                    else weaponEffectiveness = 1;
+                    if (enemy.equipedWeapon != null)
+                    {
+                        if (equipedWeapon.advantage == enemy.equipedWeapon.type)
+                            weaponEffectiveness = 2;
+                        else if (equipedWeapon.weakness == enemy.equipedWeapon.type)
+                            weaponEffectiveness = 0.5f;
+                    }
 
-                    int damage = (int)(strength + equipedWeapon.damage * weaponEffectiveness - enemy.defence);
+                    int damage = (int)(strength + equipedWeapon.damage * weaponEffectiveness - enemy.defence - enemy.tile.defense);
 
                     if (crit)
                         damage *= 3;
 
                     enemy.currentHp -= damage;
+
+                    return enemy.currentHp <= 0;
                 }
             }
+
+            return false;
         }
     }
 }
