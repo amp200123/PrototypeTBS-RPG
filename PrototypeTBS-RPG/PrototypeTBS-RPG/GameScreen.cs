@@ -186,13 +186,13 @@ namespace PrototypeTBS_RPG
                         switch (characters[j])
                         {
                             case ('p'):
-                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), 0, 0, 0);
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), 0, 0, 1);
                                 break;
                             case ('f'):
-                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Forest"), 4, 0, 1);
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Forest"), 4, 0, 2);
                                 break;
                             default:
-                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), 0, 0, 0);
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), 0, 0, 1);
                                 break;
                         }
 
@@ -281,9 +281,14 @@ namespace PrototypeTBS_RPG
 
             if (hasChar)
             {
-                if (selectedTile.charOnTile.alliance == alliances.player && selectedTile.charOnTile.canMove)
-                    menu.Add(new PopupMenuBar(content, "Move", new EventHandler(MoveMenuEvent)));
-                menu.Add(new PopupMenuBar(content, selectedTile.charOnTile.name, new EventHandler(ProfileMenuEvent)));
+                if (selectedTile.charOnTile.active)
+                {
+                    if (selectedTile.charOnTile.alliance == alliances.player && selectedTile.charOnTile.canMove)
+                        menu.Add(new PopupMenuBar(content, "Move", new EventHandler(MoveMenuEvent)));
+                    menu.Add(new PopupMenuBar(content, selectedTile.charOnTile.name, new EventHandler(ProfileMenuEvent)));
+                    menu.Add(new PopupMenuBar(content, "Wait", new EventHandler(WaitMenuEvent)));
+                }
+                else menu.Add(new PopupMenuBar(content, selectedTile.charOnTile.name, new EventHandler(ProfileMenuEvent)));
             }
 
             menu.Add(new PopupMenuBar(content, "Options", new EventHandler(OptionsMenuEvent)));
@@ -304,44 +309,72 @@ namespace PrototypeTBS_RPG
             renderMenu = false;
             renderMoveMenu = true;
 
-            int selectedX = 0;
-            int selectedY = 0;
+            FindMovableTiles(alliances.player, selectedTile, selectedTile.charOnTile.movement);
+        }
 
-            //TODO ; Overhall this into pathfinding
+        /// <summary>
+        /// Method to find and mark tiles that can be moved to
+        /// </summary>
+        /// <param name="currentTile">Current to find tiles from</param>
+        /// <param name="movesLeft">Amount of movements left</param>
+        private void FindMovableTiles(alliances allience, Tile currentTile, int movesLeft)
+        {
+            //Make sure the character has enought movement to move here
+            if (movesLeft < 0)
+                return;
 
-            //Find index of tile
-                for (int y = 0; y < map.GetLength(0); y++)
-                {
-                    for (int x = 0; x < map.GetLength(1); x++)
-                    {
-                        if (map[y, x] == selectedTile)
-                        {
-                            selectedX = x;
-                            selectedY = y;
-                        }
-                    }
-                }
-
-            foreach (Tile tile in map)
+            //Can't move to tile that is occupied
+            if (currentTile.charOnTile != null)
             {
-                int tileX = 0;
-                int tileY = 0;
+                //Enemies block a characters path
+                if (currentTile.charOnTile.alliance != allience)
+                    return;
+            }
+            else currentTile.movable = true;
 
-                //Find index of tile
-                for (int y = 0; y < map.GetLength(0); y++)
+            //If there are no more moves left, no need to check any more tiles
+            if (movesLeft == 0)
+                return;
+
+            //Find currentTile's index
+            int currentY = 0;
+            int currentX = 0;
+            for (int y = 0; y < map.GetLength(0); y++)
+            {
+                for (int x = 0; x < map.GetLength(1); x++)
                 {
-                    for (int x = 0; x < map.GetLength(1); x++)
+                    if (map[y, x].Equals(currentTile))
                     {
-                        if (map[y, x].Equals(tile))
-                        {
-                            tileY = y;
-                            tileX = x;
-                        }
+                        currentY = y;
+                        currentX = x;
                     }
                 }
+            }
 
-                if (selectedTile.charOnTile.movement >= Math.Abs(tileX - selectedX) + Math.Abs(tileY - selectedY))
-                    tile.movable = true;
+            //Check tiles in all 4 directions
+            if (currentY > 0) //Up
+            {
+                Tile checkTile = map[currentY - 1, currentX];
+
+                FindMovableTiles(allience, checkTile, movesLeft - checkTile.movement);
+            }
+            if (currentX < map.GetLength(1)) //Right 
+            {
+                Tile checkTile = map[currentY, currentX + 1];
+
+                FindMovableTiles(allience, checkTile, movesLeft - checkTile.movement);
+            }
+            if (currentY < map.GetLength(0)) //Down
+            {
+                Tile checkTile = map[currentY + 1, currentX];
+
+                FindMovableTiles(allience, checkTile, movesLeft - checkTile.movement);
+            }
+            if (currentX > 0) //Left
+            {
+                Tile checkTile = map[currentY, currentX - 1];
+
+                FindMovableTiles(allience, checkTile, movesLeft - checkTile.movement);
             }
         }
 
@@ -365,6 +398,12 @@ namespace PrototypeTBS_RPG
             renderMenu = false;
             eventAction = "profile";
             screenEvent.Invoke(this, new EventArgs());
+        }
+
+        private void WaitMenuEvent(object sender, EventArgs e)
+        {
+            selectedTile.charOnTile.active = false;
+            renderMenu = false;
         }
 
         private void OptionsMenuEvent(object sender, EventArgs e)
@@ -434,53 +473,67 @@ namespace PrototypeTBS_RPG
 
             //Clicking input
 
-            if (oldMouseState.LeftButton == ButtonState.Pressed && newMouseState.LeftButton == ButtonState.Released)
+            if (oldMouseState.LeftButton == ButtonState.Pressed && newMouseState.LeftButton == ButtonState.Released
+                && !movingScreen)
             {
-                if (selectedTile != null && !renderMenu && !renderAttackMenu && !renderMoveMenu && !movingScreen)
+                if (selectedTile != null)
                 {
-                    menuTile = selectedTile;
-                    renderMenu = true;
-                    GetMenu();
-                }
-                else if (selectedMenu != null && renderMenu)
-                {
-                    selectedMenu.MenuEvent();
-                }
-                else if (renderAttackMenu)
-                {
-                    Character attacker = menuTile.charOnTile;
-                    Character defender = selectedTile.charOnTile;
-
-                    if (attacker.Attack(defender))
-                        deadCharacters.Add(defender);
-                    else if (defender.Attack(attacker))
-                        deadCharacters.Add(attacker);
-                    else if (attacker.speed >= defender.speed + 5)
+                    if (!renderMenu && !renderAttackMenu && !renderMoveMenu)
                     {
+                        menuTile = selectedTile;
+                        renderMenu = true;
+                        GetMenu();
+                    }
+                    else if (renderAttackMenu && selectedTile.attackable)
+                    {
+                        Character attacker = menuTile.charOnTile;
+                        Character defender = selectedTile.charOnTile;
+
                         if (attacker.Attack(defender))
                             deadCharacters.Add(defender);
-                    }
-                    else if (defender.speed >= attacker.speed + 5)
-                    {
-                        if (defender.Attack(attacker))
+                        else if (defender.Attack(attacker))
                             deadCharacters.Add(attacker);
-                    }
+                        else if (attacker.speed >= defender.speed + 5)
+                        {
+                            if (attacker.Attack(defender))
+                                deadCharacters.Add(defender);
+                        }
+                        else if (defender.speed >= attacker.speed + 5)
+                        {
+                            if (defender.Attack(attacker))
+                                deadCharacters.Add(attacker);
+                        }
 
-                    attacker.active = false;
+                        attacker.active = false;
 
-                    renderAttackMenu = false; 
-                    foreach (Tile tile in attackableTiles)
-                    {
-                        tile.attackable = false;
+                        //Exp awardment
+                        if (!deadCharacters.Contains(attacker)) //Make sure attacker is alive
+                        {
+                            float expBase = defender.level - attacker.level + 1;
+                            if (expBase < 1)
+                                expBase = 1 / (1 + Math.Abs(expBase));
+                            int expModifier;
+
+                            //Check if they defeated the defender
+                            if (deadCharacters.Contains(defender))
+                                expModifier = 20;
+                            else expModifier = 5;
+
+                            attacker.GiveExp((int)Math.Ceiling(expBase * expModifier));
+                        }
+
+
+                        renderAttackMenu = false;
+                        foreach (Tile tile in attackableTiles)
+                        {
+                            tile.attackable = false;
+                        }
+                        attackableTiles = new List<Tile>();
                     }
-                    attackableTiles = new List<Tile>();
-                }
-                else if (renderMoveMenu)
-                {
-                    if (selectedTile.movable)
+                    else if (renderMoveMenu && selectedTile.movable)
                     {
                         selectedTile.charOnTile = menuTile.charOnTile;
-                        selectedTile.charOnTile.canMove = false; 
+                        selectedTile.charOnTile.canMove = false;
 
                         renderMoveMenu = false;
 
@@ -490,6 +543,11 @@ namespace PrototypeTBS_RPG
                                 tile.movable = false;
                         }
                     }
+                }
+                
+                if (selectedMenu != null && renderMenu)
+                {
+                    selectedMenu.MenuEvent();
                 }
             }
 

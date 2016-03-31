@@ -53,13 +53,23 @@ namespace PrototypeTBS_RPG
 
         //Growth rates
         public int hpChance { get; private set; }
-        public int attackChance { get; private set; }
+        public int strengthChance { get; private set; }
         public int magicChance { get; private set; }
         public int speedChance { get; private set; }
         public int skillChance { get; private set; }
         public int luckChance { get; private set; }
         public int defenceChance { get; private set; }
         public int resistanceChance { get; private set; }
+
+        //Whether or not this character gained this stat last lvl up
+        public bool gainedHp { get; private set; }
+        public bool gainedStrength { get; private set; }
+        public bool gainedMagic { get; private set; }
+        public bool gainedSpeed { get; private set; }
+        public bool gainedSkill { get; private set; }
+        public bool gainedLuck { get; private set; }
+        public bool gainedDefense { get; private set; }
+        public bool gainedResistance { get; private set; }
 
         private int CurrentHp;
         private Texture2D grayHealth, redHealth;
@@ -108,45 +118,68 @@ namespace PrototypeTBS_RPG
             spritebatch.Draw(redHealth, hpPos, redSource, Color.White);
         }
 
-        private void LevelUp()
+        public bool GiveExp(int exp)
         {
+            this.exp = exp;
+
             if (exp >= 100)
             {
+                exp %= 100;
                 level++;
 
                 if (random.Next(100) < hpChance)
                 {
                     hp++;
+                    gainedHp = true;
                 }
-                if (random.Next(100) < attackChance)
+                else gainedHp = false;
+                if (random.Next(100) < strengthChance)
                 {
                     strength++;
+                    gainedStrength = true;
                 }
+                else gainedStrength = false;
                 if (random.Next(100) < magicChance)
                 {
                     magic++;
+                    gainedMagic = true;
                 }
+                else gainedMagic = false;
                 if (random.Next(100) < speedChance)
                 {
                     speed++;
+                    gainedSpeed = true;
                 }
+                else gainedSpeed = false;
                 if (random.Next(100) < skillChance)
                 {
                     skill++;
+                    gainedSkill = true;
                 }
+                else gainedSkill = false;
                 if (random.Next(100) < luckChance)
                 {
                     luck++;
+                    gainedLuck = true;
                 }
+                else gainedLuck = false;
                 if (random.Next(100) < defenceChance)
                 {
                     defence++;
+                    gainedDefense = true;
                 }
+                else gainedDefense = false;
                 if (random.Next(100) < resistanceChance)
                 {
                     resistance++;
+                    gainedResistance = true;
                 }
+                else gainedResistance = false;
+
+                return true;
             }
+
+            return false;
         }
 
         public void Equip(Weapon weapon)

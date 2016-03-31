@@ -94,21 +94,26 @@ namespace PrototypeTBS_RPG
 
         private void GameScreenEvent(object sender, EventArgs e)
         {
-            switch ((sender as GameScreen).eventAction)
+            gameScreen = sender as GameScreen;
+
+            if (e is ProfileEventArgs)
             {
-                case ("profile"):
-                    gameScreen = sender as GameScreen;
-                    currentScreen = new CharacterProfileScreen((sender as GameScreen).menuTile.charOnTile, Content,
-                        new EventHandler(CharacterProfileScreenEvent));
-                    break;
-
-                default:
-
-                    break;
+                currentScreen = new CharacterProfileScreen((e as ProfileEventArgs).character,
+                    Content, new EventHandler(CharacterProfileScreenEvent));
+            }
+            else if (e is LevelUpEventArgs)
+            {
+                currentScreen = new LevelUpScreen((e as LevelUpEventArgs).character,
+                    Content, new EventHandler(LevelUpScreenEvent));
             }
         }
 
         private void CharacterProfileScreenEvent(object sender, EventArgs e)
+        {
+            currentScreen = gameScreen;
+        }
+
+        private void LevelUpScreenEvent(object sender, EventArgs e)
         {
             currentScreen = gameScreen;
         }

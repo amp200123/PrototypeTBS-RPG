@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="Character.cs" />
     <Compile Include="CharacterProfileScreen.cs" />
+    <Compile Include="EventArgs.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GameScreen.cs" />
@@ -47,6 +48,7 @@
     <Compile Include="Items\Item.cs" />
     <Compile Include="Items\Lance.cs" />
     <Compile Include="Items\Sword.cs" />
+    <Compile Include="LevelUpScreen.cs" />
     <Compile Include="PopupMenuBar.cs">
       <SubType>Code</SubType>
     </Compile>
