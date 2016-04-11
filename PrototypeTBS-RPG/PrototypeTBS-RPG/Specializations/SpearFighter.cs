@@ -7,17 +7,17 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace PrototypeTBS_RPG.Specializations
 {
-    class Knight : Specialization
+    class SpearFighter : Specialization
     {
-        public Knight(ContentManager content)
-            : base(content.Load<Texture2D>("Sprites/Knight"), false, new List<weaponType>() {weaponType.sword},
-            20, 6, 1, 4, 5, 4, 7, 3, 5)
+        public SpearFighter(ContentManager content) 
+            : base(content.Load<Texture2D>("Sprites/SpearFighter"), false, new List<weaponType>() { weaponType.lance }, 
+            14, 7, 3, 6, 5, 7, 5, 3, 5)
         {
         }
 
         public override string ToString()
         {
-            return "Knight";
+            return "Spear Fighter";
         }
     }
 }

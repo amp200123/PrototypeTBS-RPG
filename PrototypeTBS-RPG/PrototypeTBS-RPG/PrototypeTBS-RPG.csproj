@@ -44,11 +44,14 @@
     <Compile Include="Game1.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GameScreen.cs" />
-    <Compile Include="Items\Axe.cs" />
+    <Compile Include="InventoryBar.cs" />
+    <Compile Include="Items\IronAxe.cs" />
+    <Compile Include="Items\IronBow.cs" />
+    <Compile Include="Items\IronLance.cs" />
+    <Compile Include="Items\IronSword.cs" />
     <Compile Include="Items\Item.cs" />
-    <Compile Include="Items\Lance.cs" />
-    <Compile Include="Items\Sword.cs" />
     <Compile Include="LevelUpScreen.cs" />
+    <Compile Include="MiniMenuBar.cs" />
     <Compile Include="PopupMenuBar.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -58,6 +61,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Specializations\Knight.cs" />
+    <Compile Include="Specializations\SpearFighter.cs" />
     <Compile Include="Specializations\Specialization.cs" />
     <Compile Include="Items\Weapon.cs" />
     <Compile Include="Tile.cs" />
@@ -72,15 +76,24 @@
   <ItemGroup>
     <Content Include="Content\Levels\testLevel.txt" />
     <Content Include="Content\Misc\GrayHealthBar.png" />
+    <Content Include="Content\Misc\InventoryBar-Selected.png" />
+    <Content Include="Content\Misc\InventoryBar.png" />
+    <Content Include="Content\Misc\ItemBase.png" />
     <Content Include="Content\Misc\MenuBar-Selected.png" />
     <Content Include="Content\Misc\MenuBar.png" />
+    <Content Include="Content\Misc\MiniMenuBar-Selected.png" />
+    <Content Include="Content\Misc\MiniMenuBar.png" />
     <Content Include="Content\Misc\RedHealthBar.png" />
+    <Content Include="Content\Sprites\SpearFighter.png" />
     <Content Include="Content\Tiles\AttackableTile.png" />
     <Content Include="Content\Tiles\Forest.png" />
     <Content Include="Content\Tiles\MovableTile.png" />
     <Content Include="Content\Tiles\SelectedTile.png" />
     <Content Include="Content\Sprites\Knight.png" />
     <Content Include="Content\Tiles\Plain.png" />
+    <Content Include="Content\Weapons\IronAxe.png" />
+    <Content Include="Content\Weapons\IronBow.png" />
+    <Content Include="Content\Weapons\IronLance.png" />
     <Content Include="Content\Weapons\IronSword.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>
@@ -89,6 +102,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\Fonts\MenuBarFont.spritefont" />
+    <None Include="Content\Fonts\MiniMenuBarFont.spritefont" />
     <None Include="Content\Fonts\ProfileDescriptionFont.spritefont" />
     <None Include="Content\Fonts\ProfileLargeFont.spritefont" />
   </ItemGroup>

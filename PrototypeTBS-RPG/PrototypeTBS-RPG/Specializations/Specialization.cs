@@ -72,7 +72,7 @@ namespace PrototypeTBS_RPG
             this.resistance = resistance;
             this.movement = movement;
 
-            weaponProfs = new List<weaponType>();
+            this.weaponProfs = weaponProfs;
             promotions = new List<specializations>();
         }
 

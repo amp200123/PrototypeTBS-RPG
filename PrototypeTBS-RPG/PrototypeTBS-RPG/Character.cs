@@ -92,7 +92,7 @@ namespace PrototypeTBS_RPG
             hp = spec.hp;
             strength = spec.strength;
             magic = spec.magic;
-            speed = spec.hp;
+            speed = spec.speed;
             skill = spec.skill;
             luck = spec.luck;
             defence = spec.defence;
@@ -118,13 +118,13 @@ namespace PrototypeTBS_RPG
             spritebatch.Draw(redHealth, hpPos, redSource, Color.White);
         }
 
-        public bool GiveExp(int exp)
+        public bool GiveExp(int xp)
         {
-            this.exp = exp;
+            exp += xp;
 
             if (exp >= 100)
             {
-                exp %= 100;
+                exp -= 100;
                 level++;
 
                 if (random.Next(100) < hpChance)
@@ -188,6 +188,31 @@ namespace PrototypeTBS_RPG
                 inventory.Contains(weapon))
             {
                 equipedWeapon = weapon;
+
+                int index = inventory.IndexOf(weapon);
+
+                for (int i = index - 1; i >= 0; i--)
+                {
+                    inventory[i + 1] = inventory[i];
+                }
+
+                inventory[0] = weapon;
+            }
+        }
+        public void Unequip(Weapon weapon)
+        {
+            if (weapon == equipedWeapon)
+                equipedWeapon = null;
+        }
+
+        public void Discard(Item item)
+        {
+            if (inventory.Contains(item))
+            {
+                if (equipedWeapon == item)
+                    equipedWeapon = null;
+
+                inventory.Remove(item);
             }
         }
 
@@ -201,7 +226,7 @@ namespace PrototypeTBS_RPG
             if (equipedWeapon != null)
             {
                 //Find chance to hit enemy
-                int hitRate = 100 + skill + (equipedWeapon.accuracy - 100) + luck / 4;
+                int hitRate = 100 + skill + (equipedWeapon.accuracy - 100) + (luck / 5)  - (enemy.luck / 5);
                 int hitChance = hitRate - (enemy.speed + enemy.luck / 2);
 
                 if (hitChance < 0)

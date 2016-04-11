@@ -22,12 +22,10 @@ namespace PrototypeTBS_RPG
 
     abstract class Weapon : Item
     {
-        public Texture2D texture { get; protected set; }
         public weaponType type { get; protected set; }
         public weaponType weakness { get; protected set; }
         public weaponType advantage { get; protected set; }
 
-        public string name { get; protected set; }
         public int damage { get; protected set; }
         public int crit { get; protected set; }
         public int accuracy { get; protected set; }
@@ -35,9 +33,9 @@ namespace PrototypeTBS_RPG
         public int maxRange { get; protected set; }
 
         public Weapon(Texture2D texture, string name, weaponType type, int damage, int crit, int accuracy,
-            int minRange, int maxRange)
+            int minRange, int maxRange) 
+            : base(texture, name)
         {
-            this.texture = texture;
             this.damage = damage;
             this.crit = crit;
             this.accuracy = accuracy;

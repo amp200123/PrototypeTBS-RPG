@@ -26,11 +26,11 @@ namespace PrototypeTBS_RPG
         public Tile[,] map { get; private set; }
         public Tile selectedTile { get; private set; }
         public Tile menuTile { get; private set; }
-        public string eventAction { get; private set; }
 
         private List<Character> characters;
         private Character characterA;
         private Character characterB;
+        private Character characterC;
 
         private ContentManager content;
         private List<PopupMenuBar> menuItems;
@@ -58,15 +58,26 @@ namespace PrototypeTBS_RPG
             menuItems = new List<PopupMenuBar>();
             characters = new List<Character>();
             deadCharacters = new List<Character>();
+            
+            Weapon swordA = new IronSword(content);
+            Weapon lanceA = new IronLance(content);
+            Weapon bowA = new IronBow(content);
 
             characterA = new Character(content, "Char A", new Knight(content), alliances.player);
-            Sword swordA = new Sword(content.Load<Texture2D>("Weapons/IronSword"), "Iron Sword", 4, 0, 100);
             characterA.inventory.Add(swordA);
+            characterA.inventory.Add(bowA);
             characterA.Equip(swordA);
+
             characterB = new Character(content, "Char B", new Knight(content), alliances.enemy);
+
+            characterC = new Character(content, "Char C", new SpearFighter(content), alliances.enemy);
+            characterC.inventory.Add(swordA);
+            characterC.inventory.Add(lanceA);
+            characterC.Equip(lanceA);
 
             characters.Add(characterA);
             characters.Add(characterB);
+            characters.Add(characterC);
 
             map = ImportLevel(content, fileName);
 
@@ -101,6 +112,7 @@ namespace PrototypeTBS_RPG
 
             map[1, 1].charOnTile = characterA;
             map[1, 2].charOnTile = characterB;
+            map[4, 5].charOnTile = characterC;
         }
 
         public override void Update(GameTime gametime)
@@ -286,7 +298,8 @@ namespace PrototypeTBS_RPG
                     if (selectedTile.charOnTile.alliance == alliances.player && selectedTile.charOnTile.canMove)
                         menu.Add(new PopupMenuBar(content, "Move", new EventHandler(MoveMenuEvent)));
                     menu.Add(new PopupMenuBar(content, selectedTile.charOnTile.name, new EventHandler(ProfileMenuEvent)));
-                    menu.Add(new PopupMenuBar(content, "Wait", new EventHandler(WaitMenuEvent)));
+                    if (selectedTile.charOnTile.alliance == alliances.player)
+                        menu.Add(new PopupMenuBar(content, "Wait", new EventHandler(WaitMenuEvent)));
                 }
                 else menu.Add(new PopupMenuBar(content, selectedTile.charOnTile.name, new EventHandler(ProfileMenuEvent)));
             }
@@ -396,8 +409,7 @@ namespace PrototypeTBS_RPG
         private void ProfileMenuEvent(object sender, EventArgs e)
         {
             renderMenu = false;
-            eventAction = "profile";
-            screenEvent.Invoke(this, new EventArgs());
+            screenEvent.Invoke(this, new ProfileEventArgs(selectedTile.charOnTile));
         }
 
         private void WaitMenuEvent(object sender, EventArgs e)
@@ -509,7 +521,7 @@ namespace PrototypeTBS_RPG
                         //Exp awardment
                         if (!deadCharacters.Contains(attacker)) //Make sure attacker is alive
                         {
-                            float expBase = defender.level - attacker.level + 1;
+                            float expBase = (defender.level - attacker.level) + 1;
                             if (expBase < 1)
                                 expBase = 1 / (1 + Math.Abs(expBase));
                             int expModifier;
