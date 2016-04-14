@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using PrototypeTBS_RPG.Specializations;
 using PrototypeTBS_RPG.Items;
+using PrototypeTBS_RPG.Characters;
 
 namespace PrototypeTBS_RPG
 {
@@ -31,7 +32,9 @@ namespace PrototypeTBS_RPG
         private Character characterA;
         private Character characterB;
         private Character characterC;
+        private Character characterD;
 
+        private Random random;
         private ContentManager content;
         private List<PopupMenuBar> menuItems;
 
@@ -52,6 +55,7 @@ namespace PrototypeTBS_RPG
         {
             this.content = content;
 
+            random = new Random();
             oldKeyState = Keyboard.GetState();
             oldMouseState = Mouse.GetState();
 
@@ -59,6 +63,9 @@ namespace PrototypeTBS_RPG
             characters = new List<Character>();
             deadCharacters = new List<Character>();
             
+
+            //Temp
+
             Weapon swordA = new IronSword(content);
             Weapon lanceA = new IronLance(content);
             Weapon bowA = new IronBow(content);
@@ -75,9 +82,16 @@ namespace PrototypeTBS_RPG
             characterC.inventory.Add(lanceA);
             characterC.Equip(lanceA);
 
+            characterD = new Character(content, "Char D", new Archer(content), alliances.player);
+            characterD.inventory.Add(bowA);
+            characterD.Equip(bowA);
+
             characters.Add(characterA);
             characters.Add(characterB);
             characters.Add(characterC);
+            characters.Add(characterD);
+
+            //End Temp
 
             map = ImportLevel(content, fileName);
 
@@ -110,9 +124,11 @@ namespace PrototypeTBS_RPG
                 }
             }
 
-            map[1, 1].charOnTile = characterA;
-            map[1, 2].charOnTile = characterB;
-            map[4, 5].charOnTile = characterC;
+            //Temp
+            foreach (Character ch in characters)
+            {
+                map[random.Next(map.GetLength(0)), random.Next(map.GetLength(1))].charOnTile = ch;
+            }
         }
 
         public override void Update(GameTime gametime)
@@ -221,7 +237,6 @@ namespace PrototypeTBS_RPG
         private void GetMenu()
         {
             List<PopupMenuBar> menu = new List<PopupMenuBar>();
-            List<Tile> attackableTiles = new List<Tile>();
             int tileX = 0;
             int tileY = 0;
 
@@ -249,42 +264,12 @@ namespace PrototypeTBS_RPG
 
                 if (eqWpn != null && selectedTile.charOnTile.alliance == alliances.player && selectedTile.charOnTile.active)
                 {
-                    //Character has a weapon, is a player unit, and is active
-                    for (int i = eqWpn.minRange; i <= eqWpn.maxRange; i++)
-                    {
-                        //Check if tiles in range have characters
+                    attackableTiles = new List<Tile>();
 
-                        if (tileY + i <= map.GetLength(0) - 1)
-                            if (map[tileY + i, tileX].charOnTile != null)
-                                if (map[tileY + i, tileX].charOnTile.alliance == alliances.enemy)
-                                    attackableTiles.Add(map[tileY + i, tileX]);
+                    FindAttackableTile(selectedTile.charOnTile.alliance, selectedTile, eqWpn.maxRange, eqWpn.minRange, eqWpn.maxRange);
 
-                        if (tileY - i >= 0)
-                            if (map[tileY - i, tileX].charOnTile != null)
-                                if (map[tileY - i, tileX].charOnTile.alliance == alliances.enemy)
-                                    attackableTiles.Add(map[tileY - i, tileX]);
-
-                        if (tileX + i <= map.GetLength(1) - 1)
-                            if (map[tileY, tileX + i].charOnTile != null)
-                                if (map[tileY, tileX + i].charOnTile.alliance == alliances.enemy)
-                                    attackableTiles.Add(map[tileY, tileX + i]);
-
-                        if (tileX - i >= 0)
-                            if (map[tileY, tileX - i].charOnTile != null)
-                                if (map[tileY, tileX - i].charOnTile.alliance == alliances.enemy)
-                                    attackableTiles.Add(map[tileY, tileX - i]);
-
-                        //Check if diagonals need to be checked
-                        if (i > 1)
-                        {
-                            //Check diagonals
-                        }
-
-                        if (attackableTiles.Count > 0)
-                            canAttack = true;
-                        
-                        this.attackableTiles = attackableTiles;
-                    }
+                    if (attackableTiles.Count > 0)
+                        canAttack = true;
                 }
             }
 
@@ -317,20 +302,12 @@ namespace PrototypeTBS_RPG
             menuItems = menu;
         }
 
-        private void MoveMenuEvent(object sender, EventArgs e)
-        {
-            renderMenu = false;
-            renderMoveMenu = true;
-
-            FindMovableTiles(alliances.player, selectedTile, selectedTile.charOnTile.movement);
-        }
-
         /// <summary>
         /// Method to find and mark tiles that can be moved to
         /// </summary>
         /// <param name="currentTile">Current to find tiles from</param>
         /// <param name="movesLeft">Amount of movements left</param>
-        private void FindMovableTiles(alliances allience, Tile currentTile, int movesLeft)
+        private void FindMovableTiles(alliances alliance, Tile currentTile, int movesLeft)
         {
             //Make sure the character has enought movement to move here
             if (movesLeft < 0)
@@ -340,7 +317,7 @@ namespace PrototypeTBS_RPG
             if (currentTile.charOnTile != null)
             {
                 //Enemies block a characters path
-                if (currentTile.charOnTile.alliance != allience)
+                if (currentTile.charOnTile.alliance != alliance)
                     return;
             }
             else currentTile.movable = true;
@@ -369,26 +346,93 @@ namespace PrototypeTBS_RPG
             {
                 Tile checkTile = map[currentY - 1, currentX];
 
-                FindMovableTiles(allience, checkTile, movesLeft - checkTile.movement);
+                FindMovableTiles(alliance, checkTile, movesLeft - checkTile.movement);
             }
-            if (currentX < map.GetLength(1)) //Right 
+            if (currentX < map.GetLength(1) - 1) //Right 
             {
                 Tile checkTile = map[currentY, currentX + 1];
 
-                FindMovableTiles(allience, checkTile, movesLeft - checkTile.movement);
+                FindMovableTiles(alliance, checkTile, movesLeft - checkTile.movement);
             }
-            if (currentY < map.GetLength(0)) //Down
+            if (currentY < map.GetLength(0) - 1) //Down
             {
                 Tile checkTile = map[currentY + 1, currentX];
 
-                FindMovableTiles(allience, checkTile, movesLeft - checkTile.movement);
+                FindMovableTiles(alliance, checkTile, movesLeft - checkTile.movement);
             }
             if (currentX > 0) //Left
             {
                 Tile checkTile = map[currentY, currentX - 1];
 
-                FindMovableTiles(allience, checkTile, movesLeft - checkTile.movement);
+                FindMovableTiles(alliance, checkTile, movesLeft - checkTile.movement);
             }
+        }
+
+        private void FindAttackableTile(alliances alliance, Tile currentTile, int rangeLeft, int minRange, int maxRange)
+        {
+            //Make sure that tile is still in range
+            if (rangeLeft < 0)
+                return;
+
+            //Check if enemy exists and is in range
+            if (currentTile.charOnTile != null && currentTile.charOnTile.alliance != alliance &&
+                maxRange - rangeLeft <= maxRange && maxRange - rangeLeft >= minRange)
+            {
+                attackableTiles.Add(currentTile);
+            }
+
+            //If tile is on the edge of character's range, no need to check more tiles
+            if (rangeLeft == 0)
+                return;
+
+            //Find currentTile's index
+            int currentY = 0;
+            int currentX = 0;
+            for (int y = 0; y < map.GetLength(0); y++)
+            {
+                for (int x = 0; x < map.GetLength(1); x++)
+                {
+                    if (map[y, x].Equals(currentTile))
+                    {
+                        currentY = y;
+                        currentX = x;
+                    }
+                }
+            }
+
+            //Check tiles in all 4 directions
+            if (currentY > 0) //Up
+            {
+                Tile checkTile = map[currentY - 1, currentX];
+
+                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange);
+            }
+            if (currentX < map.GetLength(1) - 1) //Right 
+            {
+                Tile checkTile = map[currentY, currentX + 1];
+
+                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange);
+            }
+            if (currentY < map.GetLength(0) - 1) //Down
+            {
+                Tile checkTile = map[currentY + 1, currentX];
+
+                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange);
+            }
+            if (currentX > 0) //Left
+            {
+                Tile checkTile = map[currentY, currentX - 1];
+
+                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange);
+            }
+        }
+
+        private void MoveMenuEvent(object sender, EventArgs e)
+        {
+            renderMenu = false;
+            renderMoveMenu = true;
+
+            FindMovableTiles(alliances.player, selectedTile, selectedTile.charOnTile.movement);
         }
 
         private void AttackMenuEvent(object sender, EventArgs e)
@@ -499,20 +543,45 @@ namespace PrototypeTBS_RPG
                     else if (renderAttackMenu && selectedTile.attackable)
                     {
                         Character attacker = menuTile.charOnTile;
+                        int menuTileX = 0;
+                        int menuTileY = 0;
                         Character defender = selectedTile.charOnTile;
+                        int selectedTileX = 0;
+                        int selectedTileY = 0;
 
-                        if (attacker.Attack(defender))
+                        //Find indexes of tiles
+                        for (int y = 0; y < map.GetLength(0); y++)
+                        {
+                            for (int x = 0; x < map.GetLength(1); x++)
+                            {
+                                if (map[y, x].Equals(menuTile))
+                                {
+                                    menuTileY = y;
+                                    menuTileX = x;
+                                }
+
+                                if (map[y, x].Equals(selectedTile))
+                                {
+                                    selectedTileY = y;
+                                    selectedTileX = x;
+                                }
+                            }
+                        }
+
+                        int attackRange = Math.Abs(selectedTileX - menuTileX) + Math.Abs(selectedTileY - menuTileY);
+
+                        if (attacker.Attack(defender, attackRange))
                             deadCharacters.Add(defender);
-                        else if (defender.Attack(attacker))
+                        else if (defender.Attack(attacker, attackRange))
                             deadCharacters.Add(attacker);
                         else if (attacker.speed >= defender.speed + 5)
                         {
-                            if (attacker.Attack(defender))
+                            if (attacker.Attack(defender, attackRange))
                                 deadCharacters.Add(defender);
                         }
                         else if (defender.speed >= attacker.speed + 5)
                         {
-                            if (defender.Attack(attacker))
+                            if (defender.Attack(attacker, attackRange))
                                 deadCharacters.Add(attacker);
                         }
 
@@ -531,7 +600,10 @@ namespace PrototypeTBS_RPG
                                 expModifier = 20;
                             else expModifier = 5;
 
-                            attacker.GiveExp((int)Math.Ceiling(expBase * expModifier));
+                            if (attacker.GiveExp((int)Math.Ceiling(expBase * expModifier)))
+                            {
+                                screenEvent.Invoke(this, new LevelUpEventArgs(attacker));
+                            }
                         }
 
 

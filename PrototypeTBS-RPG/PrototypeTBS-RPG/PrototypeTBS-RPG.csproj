@@ -38,7 +38,7 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Character.cs" />
+    <Compile Include="Characters\Character.cs" />
     <Compile Include="CharacterProfileScreen.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="Game1.cs" />
@@ -60,6 +60,7 @@
     <Compile Include="Screen.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Specializations\Archer.cs" />
     <Compile Include="Specializations\Knight.cs" />
     <Compile Include="Specializations\SpearFighter.cs" />
     <Compile Include="Specializations\Specialization.cs" />
@@ -84,6 +85,7 @@
     <Content Include="Content\Misc\MiniMenuBar-Selected.png" />
     <Content Include="Content\Misc\MiniMenuBar.png" />
     <Content Include="Content\Misc\RedHealthBar.png" />
+    <Content Include="Content\Sprites\Archer.png" />
     <Content Include="Content\Sprites\SpearFighter.png" />
     <Content Include="Content\Tiles\AttackableTile.png" />
     <Content Include="Content\Tiles\Forest.png" />
@@ -101,6 +103,8 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Content\Fonts\SubItemDescriptionFont.spritefont" />
+    <None Include="Content\Fonts\ItemDescriptionFont.spritefont" />
     <None Include="Content\Fonts\MenuBarFont.spritefont" />
     <None Include="Content\Fonts\MiniMenuBarFont.spritefont" />
     <None Include="Content\Fonts\ProfileDescriptionFont.spritefont" />

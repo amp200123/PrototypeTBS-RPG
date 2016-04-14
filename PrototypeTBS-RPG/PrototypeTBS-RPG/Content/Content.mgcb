@@ -260,3 +260,26 @@
 /processorParam:TextureFormat=Color
 /build:Weapons/IronBow.png
 
+#begin Sprites/Archer.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:TextureFormat=Color
+/build:Sprites/Archer.png
+
+#begin Fonts/ItemDescriptionFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/ItemDescriptionFont.spritefont
+
+#begin Fonts/SubItemDescriptionFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/SubItemDescriptionFont.spritefont
+

@@ -16,6 +16,7 @@ namespace PrototypeTBS_RPG
 
         private Texture2D defaultTexture, selectedTexture;
         private SpriteFont font;
+        private SpriteFont subFont;
         private Texture2D itemBase;
 
         public InventoryBar(ContentManager content, Item item, Vector2 position)
@@ -26,7 +27,8 @@ namespace PrototypeTBS_RPG
 
             this.item = item;
             this.position = position;
-            font = content.Load<SpriteFont>("Fonts/ProfileDescriptionFont");
+            font = content.Load<SpriteFont>("Fonts/ItemDescriptionFont");
+            subFont = content.Load<SpriteFont>("Fonts/SubItemDescriptionFont");
             itemBase = content.Load<Texture2D>("Misc/ItemBase");
         }
 
@@ -46,6 +48,20 @@ namespace PrototypeTBS_RPG
                     new Vector2(item.texture.Width / 2, item.texture.Height / 2), 1, SpriteEffects.None, 0); 
                 spritebatch.DrawString(font, item.name, position - new Vector2(90, font.MeasureString(item.name).Y / 2),
                     Color.White);
+
+                if (item is Weapon)
+                {
+                    Weapon weapon = item as Weapon;
+
+                    string text = "Ak|" + weapon.damage + "| Hit|" + weapon.accuracy + "| Crt|" + weapon.crit + "| Rng|";
+
+                    if (weapon.minRange != weapon.maxRange)
+                        text += weapon.minRange + "-" + weapon.maxRange + "|";
+                    else text += weapon.maxRange + "|";
+
+                    spritebatch.DrawString(subFont, text, position - new Vector2(-135 + subFont.MeasureString(text).X,
+                        subFont.MeasureString(text).Y / 2), Color.White);
+                }
             }
         }
     }

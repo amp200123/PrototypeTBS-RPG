@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
-namespace PrototypeTBS_RPG
+namespace PrototypeTBS_RPG.Characters
 {
     enum alliances
     {
@@ -120,6 +120,9 @@ namespace PrototypeTBS_RPG
 
         public bool GiveExp(int xp)
         {
+            if (alliance != alliances.player)
+                return false;
+
             exp += xp;
 
             if (exp >= 100)
@@ -221,7 +224,7 @@ namespace PrototypeTBS_RPG
         /// </summary>
         /// <param name="enemy">Enemy character to attack</param>
         /// <returns>Whether or not the enemy has been killed</returns>
-        public bool Attack(Character enemy)
+        public bool Attack(Character enemy, int range)
         {
             if (equipedWeapon != null)
             {
@@ -247,7 +250,7 @@ namespace PrototypeTBS_RPG
 
                     float weaponEffectiveness = 1;
 
-                    if (enemy.equipedWeapon != null)
+                    if (enemy.equipedWeapon != null && range >= enemy.equipedWeapon.minRange && range <= enemy.equipedWeapon.maxRange)
                     {
                         if (equipedWeapon.advantage == enemy.equipedWeapon.type)
                             weaponEffectiveness = 2;
