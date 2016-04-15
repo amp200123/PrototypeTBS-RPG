@@ -10,7 +10,7 @@ namespace PrototypeTBS_RPG.Items
     class IronAxe : Weapon
     {
         public IronAxe(ContentManager content)
-            : base(content.Load<Texture2D>("Weapons/IronAxe"), "Iron Axe", weaponType.axe, 6, 0, 80, 1, 1)
+            : base(content.Load<Texture2D>("Items/IronAxe"), "Iron Axe", weaponType.axe, 6, 0, 80, 1, 1)
         {
 
         }

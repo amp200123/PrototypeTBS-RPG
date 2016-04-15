@@ -25,6 +25,7 @@ namespace PrototypeTBS_RPG
         public weaponType type { get; protected set; }
         public weaponType weakness { get; protected set; }
         public weaponType advantage { get; protected set; }
+        public bool magicWeapon { get; protected set; }
 
         public int damage { get; protected set; }
         public int crit { get; protected set; }

@@ -11,7 +11,7 @@ namespace PrototypeTBS_RPG.Items
     {
 
         public IronBow(ContentManager content)
-            : base(content.Load<Texture2D>("Weapons/IronBow"), "Iron Bow", weaponType.bow, 6, 0, 100, 2, 2)
+            : base(content.Load<Texture2D>("Items/IronBow"), "Iron Bow", weaponType.bow, 4, 0, 100, 2, 2)
         {
 
         }

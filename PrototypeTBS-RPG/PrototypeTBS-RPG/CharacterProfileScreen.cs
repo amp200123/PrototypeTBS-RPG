@@ -47,7 +47,7 @@ namespace PrototypeTBS_RPG
                     item = character.inventory[i];
                 else item = null;
 
-                inventory.Add(new InventoryBar(content, item,
+                inventory.Add(new InventoryBar(content, character, item,
                     new Vector2(9 * Game1.WINDOW_WIDTH / 12, 220 + i * 35)));
             }
         }
@@ -105,9 +105,7 @@ namespace PrototypeTBS_RPG
             if (oldState.RightButton == ButtonState.Pressed && newState.RightButton == ButtonState.Released)
             {
                 if (renderPopupMenu)
-                {
                     renderPopupMenu = false;
-                }
             }
 
             oldState = newState;
@@ -161,6 +159,9 @@ namespace PrototypeTBS_RPG
         {
             List<MiniMenuBar> menu = new List<MiniMenuBar>();
 
+            if (selectedBar.item.usable)
+                menu.Add(new MiniMenuBar(content, "Use", new EventHandler(UsePopupEvent)));
+
             if (selectedBar.item is Weapon)
             {
                 if (character.equipedWeapon == selectedBar.item)
@@ -182,16 +183,28 @@ namespace PrototypeTBS_RPG
             popupMenu = menu;
         }
 
+        private void UsePopupEvent(object sender, EventArgs e)
+        {
+            renderPopupMenu = false;
+            character.inventory.Remove(selectedBar.item);
+
+            ReloadInv();
+        }
+
         private void EquipPopupEvent(object sender, EventArgs e)
         {
             renderPopupMenu = false;
             character.Equip(selectedBar.item as Weapon);
+
+            ReloadInv();
         }
 
         private void UnequipPopupEvent(object sender, EventArgs e)
         {
             renderPopupMenu = false;
             character.Unequip(selectedBar.item as Weapon);
+
+            ReloadInv();
         }
 
         private void DiscardPopupEvent(object sender, EventArgs e)
@@ -199,6 +212,11 @@ namespace PrototypeTBS_RPG
             renderPopupMenu = false;
             character.Discard(selectedBar.item);
 
+            ReloadInv();
+        }
+
+        private void ReloadInv()
+        {
             inventory = new List<InventoryBar>();
             for (int i = 0; i < 5; i++)
             {
@@ -207,7 +225,7 @@ namespace PrototypeTBS_RPG
                     item = character.inventory[i];
                 else item = null;
 
-                inventory.Add(new InventoryBar(content, item,
+                inventory.Add(new InventoryBar(content, character, item,
                     new Vector2(9 * Game1.WINDOW_WIDTH / 12, 220 + i * 35)));
             }
         }

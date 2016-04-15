@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using PrototypeTBS_RPG.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,17 @@ namespace PrototypeTBS_RPG
     {
         public Texture2D texture { get; protected set; }
         public string name { get; protected set; }
+        public bool usable { get; protected set; }
 
         public Item(Texture2D texture, string name)
         {
             this.texture = texture;
             this.name = name;
+            this.usable = false;
+        }
+
+        public virtual void Use(Character character)
+        {
         }
     }
 }

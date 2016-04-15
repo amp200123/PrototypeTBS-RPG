@@ -69,10 +69,12 @@ namespace PrototypeTBS_RPG
             Weapon swordA = new IronSword(content);
             Weapon lanceA = new IronLance(content);
             Weapon bowA = new IronBow(content);
+            Tonic tonic = new Tonic(content);
 
             characterA = new Character(content, "Char A", new Knight(content), alliances.player);
             characterA.inventory.Add(swordA);
             characterA.inventory.Add(bowA);
+            characterA.inventory.Add(tonic);
             characterA.Equip(swordA);
 
             characterB = new Character(content, "Char B", new Knight(content), alliances.enemy);

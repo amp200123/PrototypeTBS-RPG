@@ -40,16 +40,19 @@
   <ItemGroup>
     <Compile Include="Characters\Character.cs" />
     <Compile Include="CharacterProfileScreen.cs" />
+    <Compile Include="Characters\DefaultEnemy.cs" />
     <Compile Include="EventArgs.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GameScreen.cs" />
     <Compile Include="InventoryBar.cs" />
+    <Compile Include="Items\Fire.cs" />
     <Compile Include="Items\IronAxe.cs" />
     <Compile Include="Items\IronBow.cs" />
     <Compile Include="Items\IronLance.cs" />
     <Compile Include="Items\IronSword.cs" />
     <Compile Include="Items\Item.cs" />
+    <Compile Include="Items\Tonic.cs" />
     <Compile Include="LevelUpScreen.cs" />
     <Compile Include="MiniMenuBar.cs" />
     <Compile Include="PopupMenuBar.cs">
@@ -75,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Items\Tonic.png" />
     <Content Include="Content\Levels\testLevel.txt" />
     <Content Include="Content\Misc\GrayHealthBar.png" />
     <Content Include="Content\Misc\InventoryBar-Selected.png" />
@@ -93,10 +97,10 @@
     <Content Include="Content\Tiles\SelectedTile.png" />
     <Content Include="Content\Sprites\Knight.png" />
     <Content Include="Content\Tiles\Plain.png" />
-    <Content Include="Content\Weapons\IronAxe.png" />
-    <Content Include="Content\Weapons\IronBow.png" />
-    <Content Include="Content\Weapons\IronLance.png" />
-    <Content Include="Content\Weapons\IronSword.png" />
+    <Content Include="Content\Items\IronAxe.png" />
+    <Content Include="Content\Items\IronBow.png" />
+    <Content Include="Content\Items\IronLance.png" />
+    <Content Include="Content\Items\IronSword.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>

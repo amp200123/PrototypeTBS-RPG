@@ -10,7 +10,7 @@ namespace PrototypeTBS_RPG.Items
     class IronSword : Weapon
     {
         public IronSword(ContentManager content)
-            : base(content.Load<Texture2D>("Weapons/IronSword"), "Iron Sword", weaponType.sword, 4, 0, 100, 1, 1)
+            : base(content.Load<Texture2D>("Items/IronSword"), "Iron Sword", weaponType.sword, 4, 0, 100, 1, 1)
         {
 
         }

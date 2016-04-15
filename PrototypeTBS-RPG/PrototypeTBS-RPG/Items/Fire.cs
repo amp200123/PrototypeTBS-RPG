@@ -7,12 +7,12 @@ using System.Text;
 
 namespace PrototypeTBS_RPG.Items
 {
-    class IronLance : Weapon
+    class Fire : Weapon
     {
-        public IronLance(ContentManager content)
-            : base(content.Load<Texture2D>("Items/IronLance"), "Iron Lance", weaponType.lance, 5, 0, 90, 1, 1)
+        public Fire(ContentManager content)
+            : base(content.Load<Texture2D>("Items/Fire"), "Fire", weaponType.elementalMagic, 4, 0, 90, 1, 2)
         {
-
+            magicWeapon = true;
         }
     }
 }

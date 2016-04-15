@@ -20,13 +20,13 @@ namespace PrototypeTBS_RPG.Characters
         public Tile tile;
         public bool canMove;
         public bool active;
-        public alliances alliance { get; private set; }
-        public Specialization spec { get; private set; }
-        public List<Item> inventory { get; private set; }
-        public Weapon equipedWeapon { get; private set; }
-        public string name { get; private set; }
-        public int level { get; private set; }
-        public int exp { get; private set; }
+        public alliances alliance { get; protected set; }
+        public Specialization spec { get; protected set; }
+        public List<Item> inventory { get; protected set; }
+        public Weapon equipedWeapon { get; protected set; }
+        public string name { get; protected set; }
+        public int level { get; protected set; }
+        public int exp { get; protected set; }
 
 
         //Stats
@@ -41,38 +41,38 @@ namespace PrototypeTBS_RPG.Characters
                     CurrentHp = 0;
             }
         }
-        public int hp { get; private set; }
-        public int strength { get; private set; }
-        public int magic { get; private set; }
-        public int speed { get; private set; }
-        public int skill { get; private set; }
-        public int luck { get; private set; }
-        public int defence { get; private set; }
-        public int resistance { get; private set; }
-        public int movement { get; private set; }
+        public int hp { get; protected set; }
+        public int strength { get; protected set; }
+        public int magic { get; protected set; }
+        public int speed { get; protected set; }
+        public int skill { get; protected set; }
+        public int luck { get; protected set; }
+        public int defence { get; protected set; }
+        public int resistance { get; protected set; }
+        public int movement { get; protected set; }
 
         //Growth rates
-        public int hpChance { get; private set; }
-        public int strengthChance { get; private set; }
-        public int magicChance { get; private set; }
-        public int speedChance { get; private set; }
-        public int skillChance { get; private set; }
-        public int luckChance { get; private set; }
-        public int defenceChance { get; private set; }
-        public int resistanceChance { get; private set; }
+        public int hpChance { get; protected set; }
+        public int strengthChance { get; protected set; }
+        public int magicChance { get; protected set; }
+        public int speedChance { get; protected set; }
+        public int skillChance { get; protected set; }
+        public int luckChance { get; protected set; }
+        public int defenceChance { get; protected set; }
+        public int resistanceChance { get; protected set; }
 
         //Whether or not this character gained this stat last lvl up
-        public bool gainedHp { get; private set; }
-        public bool gainedStrength { get; private set; }
-        public bool gainedMagic { get; private set; }
-        public bool gainedSpeed { get; private set; }
-        public bool gainedSkill { get; private set; }
-        public bool gainedLuck { get; private set; }
-        public bool gainedDefense { get; private set; }
-        public bool gainedResistance { get; private set; }
+        public bool gainedHp { get; protected set; }
+        public bool gainedStrength { get; protected set; }
+        public bool gainedMagic { get; protected set; }
+        public bool gainedSpeed { get; protected set; }
+        public bool gainedSkill { get; protected set; }
+        public bool gainedLuck { get; protected set; }
+        public bool gainedDefense { get; protected set; }
+        public bool gainedResistance { get; protected set; }
 
-        private int CurrentHp;
-        private Texture2D grayHealth, redHealth;
+        protected int CurrentHp;
+        protected Texture2D grayHealth, redHealth;
 
         public Character(ContentManager content, string name, Specialization spec, alliances alliance) //Level 1 char
         {
@@ -100,6 +100,18 @@ namespace PrototypeTBS_RPG.Characters
             movement = spec.movement;
 
             currentHp = hp;
+        }
+
+        public Character(ContentManager content)
+        {
+            random = new Random();
+            inventory = new List<Item>();
+
+            grayHealth = content.Load<Texture2D>("Misc/GrayHealthBar");
+            redHealth = content.Load<Texture2D>("Misc/RedHealthBar");
+
+            canMove = true;
+            active = true;
         }
 
         public void Draw(SpriteBatch spritebatch, Vector2 position)
@@ -226,7 +238,7 @@ namespace PrototypeTBS_RPG.Characters
         /// <returns>Whether or not the enemy has been killed</returns>
         public bool Attack(Character enemy, int range)
         {
-            if (equipedWeapon != null)
+            if (equipedWeapon != null && range >= equipedWeapon.minRange && range <= equipedWeapon.maxRange)
             {
                 //Find chance to hit enemy
                 int hitRate = 100 + skill + (equipedWeapon.accuracy - 100) + (luck / 5)  - (enemy.luck / 5);
@@ -250,7 +262,7 @@ namespace PrototypeTBS_RPG.Characters
 
                     float weaponEffectiveness = 1;
 
-                    if (enemy.equipedWeapon != null && range >= enemy.equipedWeapon.minRange && range <= enemy.equipedWeapon.maxRange)
+                    if (enemy.equipedWeapon != null)
                     {
                         if (equipedWeapon.advantage == enemy.equipedWeapon.type)
                             weaponEffectiveness = 2;
@@ -258,7 +270,13 @@ namespace PrototypeTBS_RPG.Characters
                             weaponEffectiveness = 0.5f;
                     }
 
-                    int damage = (int)(strength + equipedWeapon.damage * weaponEffectiveness - enemy.defence - enemy.tile.defense);
+                    int damage;
+
+                    if (equipedWeapon.magicWeapon)
+                    {
+                        damage = (int)(magic + equipedWeapon.damage * weaponEffectiveness - enemy.resistance - enemy.tile.defense);
+                    }
+                    else damage = (int)(strength + equipedWeapon.damage * weaponEffectiveness - enemy.defence - enemy.tile.defense);
 
                     if (crit)
                         damage *= 3;
