@@ -7,17 +7,17 @@ using System.Text;
 
 namespace PrototypeTBS_RPG.Specializations
 {
-    class Archer : Specialization
+    class Mage : Specialization
     {
-        public Archer(ContentManager content) 
-            : base(content.Load<Texture2D>("Sprites/Archer"), false, new List<weaponType>() {weaponType.bow},
-            12, 7, 3, 7, 6, 6, 3, 8, 5)
+        public Mage(ContentManager content) 
+            : base(content.Load<Texture2D>("Sprites/Mage"), false, new List<weaponType>() {weaponType.elementalMagic},
+            12, 2, 7, 6, 4, 3, 4, 7, 5)
         {
         }
 
         public override string ToString()
         {
-            return "Archer";
+            return "Mage";
         }
     }
 }

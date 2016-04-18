@@ -11,7 +11,7 @@ namespace PrototypeTBS_RPG.Specializations
     {
         public Knight(ContentManager content)
             : base(content.Load<Texture2D>("Sprites/Knight"), false, new List<weaponType>() {weaponType.sword},
-            20, 6, 1, 4, 5, 4, 7, 3, 5)
+            18, 6, 1, 4, 5, 4, 8, 3, 5)
         {
         }
 

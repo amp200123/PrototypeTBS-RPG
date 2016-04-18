@@ -33,6 +33,7 @@ namespace PrototypeTBS_RPG
         private Character characterB;
         private Character characterC;
         private Character characterD;
+        private Character characterE;
 
         private Random random;
         private ContentManager content;
@@ -66,32 +67,40 @@ namespace PrototypeTBS_RPG
 
             //Temp
 
-            Weapon swordA = new IronSword(content);
-            Weapon lanceA = new IronLance(content);
-            Weapon bowA = new IronBow(content);
+            Weapon ironSword = new IronSword(content);
+            Weapon ironLance = new IronLance(content);
+            Weapon ironBow = new IronBow(content);
             Tonic tonic = new Tonic(content);
+            FireTome fireTome = new FireTome(content);
 
             characterA = new Character(content, "Char A", new Knight(content), alliances.player);
-            characterA.inventory.Add(swordA);
-            characterA.inventory.Add(bowA);
+            characterA.inventory.Add(ironSword);
+            characterA.inventory.Add(ironBow);
             characterA.inventory.Add(tonic);
-            characterA.Equip(swordA);
+            characterA.Equip(ironSword);
 
             characterB = new Character(content, "Char B", new Knight(content), alliances.enemy);
 
             characterC = new Character(content, "Char C", new SpearFighter(content), alliances.enemy);
-            characterC.inventory.Add(swordA);
-            characterC.inventory.Add(lanceA);
-            characterC.Equip(lanceA);
+            characterC.inventory.Add(ironSword);
+            characterC.inventory.Add(ironLance);
+            characterC.Equip(ironLance);
 
             characterD = new Character(content, "Char D", new Archer(content), alliances.player);
-            characterD.inventory.Add(bowA);
-            characterD.Equip(bowA);
+            characterD.inventory.Add(ironBow);
+            characterD.Equip(ironBow);
+
+            characterE = new Character(content, "Char E", new Mage(content), alliances.player);
+            characterE.inventory.Add(tonic);
+            characterE.inventory.Add(fireTome);
+            characterE.Equip(fireTome);
 
             characters.Add(characterA);
             characters.Add(characterB);
             characters.Add(characterC);
             characters.Add(characterD);
+            characters.Add(characterE);
+            characters.Add(new DefaultEnemy(content, specializations.archer, 2, new List<Item>() {ironBow, tonic}));
 
             //End Temp
 
@@ -692,7 +701,10 @@ namespace PrototypeTBS_RPG
             foreach (Character ch in deadCharacters)
             {
                 if (ch.tile != null)
+                {
                     ch.tile.charOnTile = null;
+                    ch.tile = null;
+                }
             }
 
             oldMouseState = newMouseState;

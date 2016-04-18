@@ -16,7 +16,6 @@ namespace PrototypeTBS_RPG.Characters
 
     class Character
     {
-        public Random random;
         public Tile tile;
         public bool canMove;
         public bool active;
@@ -27,6 +26,7 @@ namespace PrototypeTBS_RPG.Characters
         public string name { get; protected set; }
         public int level { get; protected set; }
         public int exp { get; protected set; }
+        private Random random;
 
 
         //Stats
@@ -102,8 +102,11 @@ namespace PrototypeTBS_RPG.Characters
             currentHp = hp;
         }
 
-        public Character(ContentManager content)
+        public Character(ContentManager content, string name, alliances alliance)
         {
+            this.name = name;
+            this.alliance = alliance;
+
             random = new Random();
             inventory = new List<Item>();
 

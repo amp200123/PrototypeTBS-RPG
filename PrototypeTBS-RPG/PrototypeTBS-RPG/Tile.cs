@@ -39,7 +39,7 @@ namespace PrototypeTBS_RPG
                 }
                 else
                 {
-                    character = null;
+                    character = value;
                 }
             }
         }

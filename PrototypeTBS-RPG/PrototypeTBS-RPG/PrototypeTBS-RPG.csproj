@@ -46,7 +46,7 @@
     <Compile Include="GameObject.cs" />
     <Compile Include="GameScreen.cs" />
     <Compile Include="InventoryBar.cs" />
-    <Compile Include="Items\Fire.cs" />
+    <Compile Include="Items\FireTome.cs" />
     <Compile Include="Items\IronAxe.cs" />
     <Compile Include="Items\IronBow.cs" />
     <Compile Include="Items\IronLance.cs" />
@@ -65,6 +65,7 @@
     </Compile>
     <Compile Include="Specializations\Archer.cs" />
     <Compile Include="Specializations\Knight.cs" />
+    <Compile Include="Specializations\Mage.cs" />
     <Compile Include="Specializations\SpearFighter.cs" />
     <Compile Include="Specializations\Specialization.cs" />
     <Compile Include="Items\Weapon.cs" />
@@ -78,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Items\FireTome.png" />
     <Content Include="Content\Items\Tonic.png" />
     <Content Include="Content\Levels\testLevel.txt" />
     <Content Include="Content\Misc\GrayHealthBar.png" />
@@ -90,6 +92,7 @@
     <Content Include="Content\Misc\MiniMenuBar.png" />
     <Content Include="Content\Misc\RedHealthBar.png" />
     <Content Include="Content\Sprites\Archer.png" />
+    <Content Include="Content\Sprites\Mage.png" />
     <Content Include="Content\Sprites\SpearFighter.png" />
     <Content Include="Content\Tiles\AttackableTile.png" />
     <Content Include="Content\Tiles\Forest.png" />
