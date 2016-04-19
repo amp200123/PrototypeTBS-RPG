@@ -6,8 +6,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
-using PrototypeTBS_RPG.Specializations;
-using PrototypeTBS_RPG.Characters;
 
 namespace PrototypeTBS_RPG
 {
@@ -48,7 +46,7 @@ namespace PrototypeTBS_RPG
                 else item = null;
 
                 inventory.Add(new InventoryBar(content, character, item,
-                    new Vector2(9 * Game1.WINDOW_WIDTH / 12, 220 + i * 35)));
+                    new Vector2(9 * Game1.WINDOW_WIDTH / 12, 220 + i * 35), i));
             }
         }
 
@@ -116,7 +114,7 @@ namespace PrototypeTBS_RPG
             //TODO: add background or something to style it up
 
             DrawText(spritebatch, largeFont, character.name, new Vector2(Game1.WINDOW_WIDTH / 2, 40));
-            DrawText(spritebatch, descriptionFont, "Lvl " + character.level + " " + character.spec.ToString(),
+            DrawText(spritebatch, descriptionFont, "Lvl " + character.level + " " + character.spec.name,
                 new Vector2(Game1.WINDOW_WIDTH / 2, 80));
             DrawText(spritebatch, descriptionFont, character.exp + " / 100 xp", new Vector2(Game1.WINDOW_WIDTH / 2, 105));
 
@@ -130,7 +128,7 @@ namespace PrototypeTBS_RPG
             DrawText(spritebatch, descriptionFont, "Spd: " + character.speed, new Vector2(2 * Game1.WINDOW_WIDTH / 12, 330));
             DrawText(spritebatch, descriptionFont, "Skl: " + character.skill, new Vector2(2 * Game1.WINDOW_WIDTH / 12, 370));
             DrawText(spritebatch, descriptionFont, "Lck: " + character.luck, new Vector2(4 * Game1.WINDOW_WIDTH / 12, 250));
-            DrawText(spritebatch, descriptionFont, "Def: " + character.defence, new Vector2(4 * Game1.WINDOW_WIDTH / 12, 290));
+            DrawText(spritebatch, descriptionFont, "Def: " + character.defense, new Vector2(4 * Game1.WINDOW_WIDTH / 12, 290));
             DrawText(spritebatch, descriptionFont, "Res: " + character.resistance, new Vector2(4 * Game1.WINDOW_WIDTH / 12, 330));
             DrawText(spritebatch, descriptionFont, "Mov: " + character.movement, new Vector2(4 * Game1.WINDOW_WIDTH / 12, 370));
 
@@ -186,6 +184,7 @@ namespace PrototypeTBS_RPG
         private void UsePopupEvent(object sender, EventArgs e)
         {
             renderPopupMenu = false;
+            selectedBar.item.Use(character);
             character.inventory.Remove(selectedBar.item);
 
             ReloadInv();
@@ -226,7 +225,7 @@ namespace PrototypeTBS_RPG
                 else item = null;
 
                 inventory.Add(new InventoryBar(content, character, item,
-                    new Vector2(9 * Game1.WINDOW_WIDTH / 12, 220 + i * 35)));
+                    new Vector2(9 * Game1.WINDOW_WIDTH / 12, 220 + i * 35), i));
             }
         }
     }

@@ -7,9 +7,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
-using PrototypeTBS_RPG.Specializations;
-using PrototypeTBS_RPG.Items;
-using PrototypeTBS_RPG.Characters;
 
 namespace PrototypeTBS_RPG
 {
@@ -29,11 +26,6 @@ namespace PrototypeTBS_RPG
         public Tile menuTile { get; private set; }
 
         private List<Character> characters;
-        private Character characterA;
-        private Character characterB;
-        private Character characterC;
-        private Character characterD;
-        private Character characterE;
 
         private Random random;
         private ContentManager content;
@@ -66,41 +58,9 @@ namespace PrototypeTBS_RPG
             
 
             //Temp
+            characters.Add(Game1.Seth);
 
-            Weapon ironSword = new IronSword(content);
-            Weapon ironLance = new IronLance(content);
-            Weapon ironBow = new IronBow(content);
-            Tonic tonic = new Tonic(content);
-            FireTome fireTome = new FireTome(content);
-
-            characterA = new Character(content, "Char A", new Knight(content), alliances.player);
-            characterA.inventory.Add(ironSword);
-            characterA.inventory.Add(ironBow);
-            characterA.inventory.Add(tonic);
-            characterA.Equip(ironSword);
-
-            characterB = new Character(content, "Char B", new Knight(content), alliances.enemy);
-
-            characterC = new Character(content, "Char C", new SpearFighter(content), alliances.enemy);
-            characterC.inventory.Add(ironSword);
-            characterC.inventory.Add(ironLance);
-            characterC.Equip(ironLance);
-
-            characterD = new Character(content, "Char D", new Archer(content), alliances.player);
-            characterD.inventory.Add(ironBow);
-            characterD.Equip(ironBow);
-
-            characterE = new Character(content, "Char E", new Mage(content), alliances.player);
-            characterE.inventory.Add(tonic);
-            characterE.inventory.Add(fireTome);
-            characterE.Equip(fireTome);
-
-            characters.Add(characterA);
-            characters.Add(characterB);
-            characters.Add(characterC);
-            characters.Add(characterD);
-            characters.Add(characterE);
-            characters.Add(new DefaultEnemy(content, specializations.archer, 2, new List<Item>() {ironBow, tonic}));
+            characters.Add(new DefaultEnemy(content, specializations.archer, 2, new List<Item>() {Game1.IronBow, Game1.HealTonic}));
 
             //End Temp
 

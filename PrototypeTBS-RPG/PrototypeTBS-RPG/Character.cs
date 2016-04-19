@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
-namespace PrototypeTBS_RPG.Characters
+namespace PrototypeTBS_RPG
 {
     enum alliances
     {
@@ -47,19 +47,19 @@ namespace PrototypeTBS_RPG.Characters
         public int speed { get; protected set; }
         public int skill { get; protected set; }
         public int luck { get; protected set; }
-        public int defence { get; protected set; }
+        public int defense { get; protected set; }
         public int resistance { get; protected set; }
         public int movement { get; protected set; }
 
         //Growth rates
-        public int hpChance { get; protected set; }
-        public int strengthChance { get; protected set; }
-        public int magicChance { get; protected set; }
-        public int speedChance { get; protected set; }
-        public int skillChance { get; protected set; }
-        public int luckChance { get; protected set; }
-        public int defenceChance { get; protected set; }
-        public int resistanceChance { get; protected set; }
+        public float hpChance { get; protected set; }
+        public float strengthChance { get; protected set; }
+        public float magicChance { get; protected set; }
+        public float speedChance { get; protected set; }
+        public float skillChance { get; protected set; }
+        public float luckChance { get; protected set; }
+        public float defenseChance { get; protected set; }
+        public float resistanceChance { get; protected set; }
 
         //Whether or not this character gained this stat last lvl up
         public bool gainedHp { get; protected set; }
@@ -74,7 +74,9 @@ namespace PrototypeTBS_RPG.Characters
         protected int CurrentHp;
         protected Texture2D grayHealth, redHealth;
 
-        public Character(ContentManager content, string name, Specialization spec, alliances alliance) //Level 1 char
+        public Character(ContentManager content, string name, Specialization spec, alliances alliance, //Basic level 1 char
+            float hpGrowth = 0, float strengthGrowth = 0, float magicGrowth = 0, float speedGrowth = 0, float skillGrowth = 0,
+            float luckGrowth = 0, float defenseGrowth = 0, float resistanceGrowth = 0, List<Item> inventory = null)
         {
             random = new Random();
             inventory = new List<Item>();
@@ -95,14 +97,71 @@ namespace PrototypeTBS_RPG.Characters
             speed = spec.speed;
             skill = spec.skill;
             luck = spec.luck;
-            defence = spec.defence;
+            defense = spec.defense;
             resistance = spec.resistance;
             movement = spec.movement;
 
+            hpChance = hpGrowth;
+            strengthChance = strengthGrowth;
+            magicChance = magicGrowth;
+            speedChance = speedGrowth;
+            skillChance = skillGrowth;
+            luckChance = luckGrowth;
+            defenseChance = defenseGrowth;
+            resistanceChance = resistanceGrowth;
+
             currentHp = hp;
+
+            if (inventory == null)
+                this.inventory = new List<Item>();
+            else this.inventory = inventory;
         }
 
-        public Character(ContentManager content, string name, alliances alliance)
+        //Full character template
+        public Character(ContentManager content, string name, Specialization spec, alliances alliance, int level,
+            int hp, int strength, int magic, int speed, int skill, int luck, int defense, int resistance, int movement,
+            float hpGrowth = 0, float strengthGrowth = 0, float magicGrowth = 0, float speedGrowth = 0, float skillGrowth = 0,
+            float luckGrowth = 0, float defenseGrowth = 0, float resistanceGrowth = 0, List<Item> inventory = null)
+        {
+            random = new Random();
+            grayHealth = content.Load<Texture2D>("Misc/GrayHealthBar");
+            redHealth = content.Load<Texture2D>("Misc/RedHealthBar");
+
+            canMove = true;
+            active = true;
+
+            this.alliance = alliance;
+            this.spec = spec;
+            this.name = name;
+            this.level = level;
+
+            this.hp = hp;
+            this.strength = strength;
+            this.magic = magic;
+            this.speed = speed;
+            this.skill = skill;
+            this.luck = luck;
+            this.defense = defense;
+            this.resistance = resistance;
+            this.movement = movement;
+
+            hpChance = hpGrowth;
+            strengthChance = strengthGrowth;
+            magicChance = magicGrowth;
+            speedChance = speedGrowth;
+            skillChance = skillGrowth;
+            luckChance = luckGrowth;
+            defenseChance = defenseGrowth;
+            resistanceChance = resistanceGrowth;
+
+            currentHp = hp;
+
+            if (inventory == null)
+                this.inventory = new List<Item>();
+            else this.inventory = inventory;
+        }
+
+        public Character(ContentManager content, string name, alliances alliance) //Generic character template
         {
             this.name = name;
             this.alliance = alliance;
@@ -181,9 +240,9 @@ namespace PrototypeTBS_RPG.Characters
                     gainedLuck = true;
                 }
                 else gainedLuck = false;
-                if (random.Next(100) < defenceChance)
+                if (random.Next(100) < defenseChance)
                 {
-                    defence++;
+                    defense++;
                     gainedDefense = true;
                 }
                 else gainedDefense = false;
@@ -217,21 +276,41 @@ namespace PrototypeTBS_RPG.Characters
                 inventory[0] = weapon;
             }
         }
+
+        /// <summary>
+        /// Unequips specified weapon, if possible
+        /// </summary>
         public void Unequip(Weapon weapon)
         {
             if (weapon == equipedWeapon)
                 equipedWeapon = null;
         }
 
+        /// <summary>
+        /// Adds specified item to character's inventory, if possible
+        /// </summary>
+        public void AddItem(Item item)
+        {
+            if (inventory.Count <= 5)
+                inventory.Add(item);
+        }
+
+        /// <summary>
+        /// Removes specified item from character's inventory, if possible
+        /// </summary>
         public void Discard(Item item)
         {
             if (inventory.Contains(item))
             {
-                if (equipedWeapon == item)
-                    equipedWeapon = null;
-
+                //Remove last occurence of this item
+                inventory.Reverse();
                 inventory.Remove(item);
+                inventory.Reverse();
+
+                if (equipedWeapon == item && !inventory.Contains(item))
+                    equipedWeapon = null;
             }
+
         }
 
         /// <summary>
@@ -279,7 +358,7 @@ namespace PrototypeTBS_RPG.Characters
                     {
                         damage = (int)(magic + equipedWeapon.damage * weaponEffectiveness - enemy.resistance - enemy.tile.defense);
                     }
-                    else damage = (int)(strength + equipedWeapon.damage * weaponEffectiveness - enemy.defence - enemy.tile.defense);
+                    else damage = (int)(strength + equipedWeapon.damage * weaponEffectiveness - enemy.defense - enemy.tile.defense);
 
                     if (crit)
                         damage *= 3;

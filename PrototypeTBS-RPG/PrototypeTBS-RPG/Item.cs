@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
-using PrototypeTBS_RPG.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;

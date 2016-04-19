@@ -3,9 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using PrototypeTBS_RPG.Specializations;
 
-namespace PrototypeTBS_RPG.Characters
+namespace PrototypeTBS_RPG
 {
     class DefaultEnemy : Character
     {
@@ -17,17 +16,17 @@ namespace PrototypeTBS_RPG.Characters
             switch (spec)
             {
                 case (specializations.archer):
-                    this.spec = new Archer(content);
+                    this.spec = Game1.Archer;
 
                     break;
 
                 case (specializations.spearFighter):
-                    this.spec = new SpearFighter(content);
+                    this.spec = Game1.SpearFighter;
 
                     break;
 
                 default: // Knight
-                    this.spec = new Knight(content);
+                    this.spec = Game1.Knight;
 
                     break;
             }
@@ -41,7 +40,7 @@ namespace PrototypeTBS_RPG.Characters
             speed = (int)Math.Round(level * (this.spec.speed / 10f) + this.spec.speed);
             skill = (int)Math.Round(level * (this.spec.skill / 10f) + this.spec.skill);
             luck = (int)Math.Round(level * (this.spec.luck / 10f) + this.spec.luck);
-            defence = (int)Math.Round(level * (this.spec.defence / 10f) + this.spec.defence);
+            defense = (int)Math.Round(level * (this.spec.defense / 10f) + this.spec.defense);
             resistance = (int)Math.Round(level * (this.spec.resistance / 10f) + this.spec.resistance);
             movement = this.spec.movement;
 

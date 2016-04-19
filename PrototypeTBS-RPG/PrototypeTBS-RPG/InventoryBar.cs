@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using PrototypeTBS_RPG.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,8 +19,9 @@ namespace PrototypeTBS_RPG
         private SpriteFont font;
         private SpriteFont subFont;
         private Texture2D itemBase;
+        private int invPos;
 
-        public InventoryBar(ContentManager content, Character character, Item item, Vector2 position)
+        public InventoryBar(ContentManager content, Character character, Item item, Vector2 position, int invPos)
             : base(content.Load<Texture2D>("Misc/InventoryBar"))
         {
             defaultTexture = content.Load<Texture2D>("Misc/InventoryBar");
@@ -30,6 +30,8 @@ namespace PrototypeTBS_RPG
             this.item = item;
             this.character = character;
             this.position = position;
+            this.invPos = invPos;
+
             font = content.Load<SpriteFont>("Fonts/ItemDescriptionFont");
             subFont = content.Load<SpriteFont>("Fonts/SubItemDescriptionFont");
             itemBase = content.Load<Texture2D>("Misc/ItemBase");
@@ -65,7 +67,7 @@ namespace PrototypeTBS_RPG
                     spritebatch.DrawString(subFont, text, position - new Vector2(-135 + subFont.MeasureString(text).X,
                         subFont.MeasureString(text).Y / 2), Color.Black);
 
-                    if (character.equipedWeapon == weapon)
+                    if (character.equipedWeapon == weapon && invPos == 0)
                         spritebatch.DrawString(subFont, "E", position - new Vector2(130,
                             subFont.MeasureString("E").Y / 2), Color.Black);
                 }

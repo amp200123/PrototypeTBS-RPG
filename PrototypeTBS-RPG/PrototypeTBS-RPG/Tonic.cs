@@ -1,12 +1,11 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using PrototypeTBS_RPG.Characters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace PrototypeTBS_RPG.Items
+namespace PrototypeTBS_RPG
 {
     class Tonic : Item
     {

@@ -40,12 +40,13 @@ namespace PrototypeTBS_RPG
         none
     }
 
-    abstract class Specialization
+    class Specialization
     {
         public Texture2D sprite { get; protected set; }
         public List<weaponType> weaponProfs { get; protected set; }
         public List<specializations> promotions { get; protected set; }
         public bool isAdvancedSpec { get; protected set; }
+        public string name { get; protected set; }
 
         //Base specialization stats
         public int hp { get; private set; }
@@ -54,21 +55,22 @@ namespace PrototypeTBS_RPG
         public int speed { get; private set; }
         public int skill { get; private set; }
         public int luck { get; private set; }
-        public int defence { get; private set; }
+        public int defense { get; private set; }
         public int resistance { get; private set; }
         public int movement { get; private set; }
 
-        protected Specialization(Texture2D sprite, bool isAdvanced, List<weaponType> weaponProfs, int hp,
-            int strength, int magic, int speed, int skill, int luck, int defence, int resistance, int movement)
+        public Specialization(Texture2D sprite, string name, bool isAdvanced, List<weaponType> weaponProfs, int hp,
+            int strength, int magic, int speed, int skill, int luck, int defense, int resistance, int movement)
         {
             this.sprite = sprite;
+            this.name = name;
             this.hp = hp;
             this.strength = strength;
             this.magic = magic;
             this.speed = speed;
             this.skill = skill;
             this.luck = luck;
-            this.defence = defence;
+            this.defense = defense;
             this.resistance = resistance;
             this.movement = movement;
 
@@ -81,7 +83,5 @@ namespace PrototypeTBS_RPG
             spritebatch.Draw(sprite, position, new Rectangle(0, 0, sprite.Width, sprite.Height), color, 0,
                     new Vector2(sprite.Width / 2, sprite.Height / 2), 1, SpriteEffects.None, 1);
         }
-
-        public abstract override string ToString();
     }
 }
