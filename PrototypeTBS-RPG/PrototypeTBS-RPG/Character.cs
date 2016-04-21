@@ -156,9 +156,12 @@ namespace PrototypeTBS_RPG
 
             currentHp = hp;
 
-            if (inventory == null)
+            this.inventory = inventory;
+
+            if (this.inventory == null)
                 this.inventory = new List<Item>();
-            else this.inventory = inventory;
+            else if (this.inventory.Count > 0 && this.inventory[0] is Weapon)
+                Equip(this.inventory[0] as Weapon);
         }
 
         public Character(ContentManager content, string name, alliances alliance) //Generic character template
@@ -323,7 +326,7 @@ namespace PrototypeTBS_RPG
             if (equipedWeapon != null && range >= equipedWeapon.minRange && range <= equipedWeapon.maxRange)
             {
                 //Find chance to hit enemy
-                int hitRate = 100 + skill + (equipedWeapon.accuracy - 100) + (luck / 5)  - (enemy.luck / 5);
+                int hitRate = equipedWeapon.accuracy + skill + (luck / 5) - (enemy.luck / 5);
                 int hitChance = hitRate - (enemy.speed + enemy.luck / 2);
 
                 if (hitChance < 0)

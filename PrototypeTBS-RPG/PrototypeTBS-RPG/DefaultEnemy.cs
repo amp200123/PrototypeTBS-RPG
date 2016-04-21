@@ -8,28 +8,11 @@ namespace PrototypeTBS_RPG
 {
     class DefaultEnemy : Character
     {
-        public DefaultEnemy(ContentManager content, specializations spec, int level, List<Item> inventory = null)
+        public DefaultEnemy(ContentManager content, Specialization spec, int level, List<Item> inventory = null)
             : base(content, "Enemy", alliances.enemy)
         {
             this.level = level;
-
-            switch (spec)
-            {
-                case (specializations.archer):
-                    this.spec = Game1.Archer;
-
-                    break;
-
-                case (specializations.spearFighter):
-                    this.spec = Game1.SpearFighter;
-
-                    break;
-
-                default: // Knight
-                    this.spec = Game1.Knight;
-
-                    break;
-            }
+            this.spec = spec;
 
             // Get default stats from Specialization
 

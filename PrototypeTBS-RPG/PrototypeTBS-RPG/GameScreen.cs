@@ -55,12 +55,13 @@ namespace PrototypeTBS_RPG
             menuItems = new List<PopupMenuBar>();
             characters = new List<Character>();
             deadCharacters = new List<Character>();
-            
 
             //Temp
             characters.Add(Game1.Seth);
-
-            characters.Add(new DefaultEnemy(content, specializations.archer, 2, new List<Item>() {Game1.IronBow, Game1.HealTonic}));
+            characters.Add(new DefaultEnemy(content, Game1.Archer, 2, new List<Item>() { Game1.IronBow, Game1.HealTonic }));
+            characters.Add(new DefaultEnemy(content, Game1.Cavalier, 3, new List<Item>() { Game1.SteelLance }));
+            characters.Add(new DefaultEnemy(content, Game1.Knight, 5, new List<Item>() { Game1.IronSword }));
+            characters.Add(new DefaultEnemy(content, Game1.Shaman, 5, new List<Item>() { Game1.CorruptTome }));
 
             //End Temp
 

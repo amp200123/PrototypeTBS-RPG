@@ -16,17 +16,28 @@ namespace PrototypeTBS_RPG
 
         //Static Items
         public static Weapon IronSword;
+        public static Weapon SteelSword;
         public static Weapon IronLance;
+        public static Weapon SteelLance;
         public static Weapon IronAxe;
+        public static Weapon SteelAxe;
         public static Weapon IronBow;
+        public static Weapon SteelBow;
         public static Weapon FireTome;
+        public static Weapon LightningTome;
+        public static Weapon CorruptTome;
         public static Tonic HealTonic;
 
         //Static Specializations
         public static Specialization Knight;
-        public static Specialization Archer;
         public static Specialization SpearFighter;
+        public static Specialization Warrior;
+        public static Specialization Archer;
+        public static Specialization Swordsman;
+        public static Specialization Cavalier;
         public static Specialization Mage;
+        public static Specialization Priest;
+        public static Specialization Shaman;
 
         //Static Characters
         public static Character Seth;
@@ -73,23 +84,39 @@ namespace PrototypeTBS_RPG
 
             //Assign static weapons, specs, & characters default values
             IronSword = new Weapon(Content.Load<Texture2D>("Items/IronSword"), "Iron Sword", weaponType.sword, 4, 0, 100, 1, 1, false);
+            SteelSword = new Weapon(Content.Load<Texture2D>("Items/SteelSword"), "Steel Sword", weaponType.sword, 6, 0, 95, 1, 1, false);
             IronLance = new Weapon(Content.Load<Texture2D>("Items/IronLance"), "Iron Lance", weaponType.lance, 5, 0, 90, 1, 1, false);
-            IronBow = new Weapon(Content.Load<Texture2D>("Items/IronBow"), "Iron Bow", weaponType.bow, 4, 0, 100, 2, 2, false);
+            SteelLance = new Weapon(Content.Load<Texture2D>("Items/SteelLance"), "Steel Lance", weaponType.lance, 7, 0, 85, 1, 1, false);
             IronAxe = new Weapon(Content.Load<Texture2D>("Items/IronAxe"), "Iron Axe", weaponType.axe, 6, 0, 80, 1, 1, false);
-            FireTome = new Weapon(Content.Load<Texture2D>("Items/FireTome"), "Fire", weaponType.elementalMagic, 4, 0, 90, 1, 2, true);
+            SteelAxe = new Weapon(Content.Load<Texture2D>("Items/SteelAxe"), "Steel Axe", weaponType.axe, 8, 0, 75, 1, 1, false);
+            IronBow = new Weapon(Content.Load<Texture2D>("Items/IronBow"), "Iron Bow", weaponType.bow, 4, 0, 100, 2, 2, false);
+            SteelBow = new Weapon(Content.Load<Texture2D>("Items/SteelBow"), "Steel Bow", weaponType.bow, 6, 0, 100, 2, 2, false);
+            FireTome = new Weapon(Content.Load<Texture2D>("Items/FireTome"), "Fire", weaponType.elementalMagic, 5, 0, 90, 1, 2, true);
+            LightningTome = new Weapon(Content.Load<Texture2D>("Items/LightningTome"), "Lighting", weaponType.lightMagic, 4, 0, 100, 1, 2, true);
+            CorruptTome = new Weapon(Content.Load<Texture2D>("Items/CorruptTome"), "Corrupt", weaponType.darkMagic, 6, 0, 70, 1, 2, true);
             HealTonic = new Tonic(Content);
 
             Knight = new Specialization(Content.Load<Texture2D>("Sprites/Knight"), "Knight", false,
-                new List<weaponType>() { weaponType.sword }, 18, 6, 1, 4, 5, 4, 8, 3, 5);
+                new List<weaponType>() { weaponType.sword }, 16, 6, 1, 3, 5, 4, 8, 3, 5);
             SpearFighter = new Specialization(Content.Load<Texture2D>("Sprites/SpearFighter"), "Spear Fighter", false,
-                new List<weaponType>() { weaponType.lance }, 14, 7, 3, 6, 5, 7, 5, 3, 5);
+                new List<weaponType>() { weaponType.lance }, 14, 7, 4, 6, 5, 7, 5, 3, 5);
+            Warrior = new Specialization(Content.Load<Texture2D>("Sprites/Warrior"), "Warrior", false,
+                new List<weaponType>() { weaponType.axe }, 18, 7, 0, 3, 2, 1, 6, 2, 5);
             Archer = new Specialization(Content.Load<Texture2D>("Sprites/Archer"), "Archer", false,
-                new List<weaponType>() { weaponType.bow }, 12, 7, 3, 7, 6, 6, 3, 8, 5);
+                new List<weaponType>() { weaponType.bow }, 11, 7, 3, 7, 6, 6, 3, 8, 5);
+            Swordsman = new Specialization(Content.Load<Texture2D>("Sprites/Swordsman"), "Swordsman", false,
+                new List<weaponType>() { weaponType.sword }, 11, 6, 2, 8, 6, 9, 4, 5, 5);
+            Cavalier = new Specialization(Content.Load<Texture2D>("Sprites/Cavalier"), "Cavalier", false,
+                new List<weaponType>() { weaponType.sword, weaponType.lance }, 15, 6, 1, 7, 6, 5, 6, 2, 6);
             Mage = new Specialization(Content.Load<Texture2D>("Sprites/Mage"), "Mage", false,
-                new List<weaponType>() { weaponType.elementalMagic }, 12, 2, 7, 6, 4, 3, 4, 7, 5);
+                new List<weaponType>() { weaponType.elementalMagic }, 12, 2, 7, 6, 4, 5, 3, 7, 5);
+            Priest = new Specialization(Content.Load<Texture2D>("Sprites/Priest"), "Priest", false,
+                new List<weaponType>() { weaponType.lightMagic }, 11, 0, 7, 5, 7, 7, 2, 8, 5);
+            Shaman = new Specialization(Content.Load<Texture2D>("Sprites/Shaman"), "Shaman", false,
+                new List<weaponType>() { weaponType.darkMagic }, 14, 4, 6, 4, 6, 4, 4, 6, 5);
 
-            Seth = new Character(Content, "Seth", Knight, alliances.player, 5, 25, 12, 0, 8, 9, 8, 15, 2, 5,
-                .7f, .5f, 0f, .3f, .35f, .3f, .7f, .15f, new List<Item>() { IronSword, HealTonic });
+            Seth = new Character(Content, "Seth", Knight, alliances.player, 5, 25, 12, 0, 6, 9, 8, 15, 2, 5,
+                .7f, .5f, 0f, .3f, .35f, .3f, .65f, .15f, new List<Item>() { SteelSword, HealTonic });
 
 
             gameScreen = new GameScreen(Content, new EventHandler(GameScreenEvent), "testLevel");

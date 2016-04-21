@@ -111,7 +111,7 @@ namespace PrototypeTBS_RPG
 
         public override void Draw(GameTime gameTime, SpriteBatch spritebatch)
         {
-            //TODO: add background or something to style it up
+            //TODO: add background or something to stylize 
 
             DrawText(spritebatch, largeFont, character.name, new Vector2(Game1.WINDOW_WIDTH / 2, 40));
             DrawText(spritebatch, descriptionFont, "Lvl " + character.level + " " + character.spec.name,
