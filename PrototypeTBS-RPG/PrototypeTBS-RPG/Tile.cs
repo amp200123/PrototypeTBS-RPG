@@ -45,11 +45,13 @@ namespace PrototypeTBS_RPG
 
         public bool isSelected;
         public bool attackable;
+        public bool healable;
         public bool movable;
 
         private Character character;
         private Texture2D selectedTile;
         private Texture2D attackableTile;
+        private Texture2D healableTile;
         private Texture2D movableTile;
 
         public Tile(ContentManager content, Texture2D texture, int defense, int health, int movement) : base(texture)
@@ -60,6 +62,7 @@ namespace PrototypeTBS_RPG
 
             selectedTile = content.Load<Texture2D>("Tiles/SelectedTile");
             attackableTile = content.Load<Texture2D>("Tiles/AttackableTile");
+            healableTile = content.Load<Texture2D>("Tiles/HealableTile");
             movableTile = content.Load<Texture2D>("Tiles/MovableTile");
         }
 
@@ -71,6 +74,12 @@ namespace PrototypeTBS_RPG
             if (attackable)
             {
                 spritebatch.Draw(attackableTile, position, new Rectangle(0, 0, attackableTile.Width, attackableTile.Height),
+                    Color.White, rotation, new Vector2(Width / 2, Height / 2), scale, SpriteEffects.None, 1);
+            }
+
+            if (healable)
+            {
+                spritebatch.Draw(healableTile, position, new Rectangle(0, 0, healableTile.Width, healableTile.Height),
                     Color.White, rotation, new Vector2(Width / 2, Height / 2), scale, SpriteEffects.None, 1);
             }
 

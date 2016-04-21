@@ -79,8 +79,6 @@ namespace PrototypeTBS_RPG
             float luckGrowth = 0, float defenseGrowth = 0, float resistanceGrowth = 0, List<Item> inventory = null)
         {
             random = new Random();
-            inventory = new List<Item>();
-
             grayHealth = content.Load<Texture2D>("Misc/GrayHealthBar");
             redHealth = content.Load<Texture2D>("Misc/RedHealthBar");
 
@@ -112,9 +110,12 @@ namespace PrototypeTBS_RPG
 
             currentHp = hp;
 
-            if (inventory == null)
+            this.inventory = inventory;
+
+            if (this.inventory == null)
                 this.inventory = new List<Item>();
-            else this.inventory = inventory;
+            else if (this.inventory.Count > 0 && this.inventory[0] is Weapon)
+                Equip(this.inventory[0] as Weapon);
         }
 
         //Full character template

@@ -58,18 +58,21 @@ namespace PrototypeTBS_RPG
                 {
                     Weapon weapon = item as Weapon;
 
-                    string text = "Ak|" + weapon.damage + "| Hit|" + weapon.accuracy + "| Crt|" + weapon.crit + "| Rng|";
-
-                    if (weapon.minRange != weapon.maxRange)
-                        text += weapon.minRange + "-" + weapon.maxRange + "|";
-                    else text += weapon.maxRange + "|";
-
-                    spritebatch.DrawString(subFont, text, position - new Vector2(-135 + subFont.MeasureString(text).X,
-                        subFont.MeasureString(text).Y / 2), Color.Black);
-
                     if (character.equipedWeapon == weapon && invPos == 0)
                         spritebatch.DrawString(subFont, "E", position - new Vector2(130,
                             subFont.MeasureString("E").Y / 2), Color.Black);
+
+                    if (!(item is Staff))
+                    {
+                        string text = "Ak|" + weapon.damage + "| Hit|" + weapon.accuracy + "| Crt|" + weapon.crit + "| Rng|";
+
+                        if (weapon.minRange != weapon.maxRange)
+                            text += weapon.minRange + "-" + weapon.maxRange + "|";
+                        else text += weapon.maxRange + "|";
+
+                        spritebatch.DrawString(subFont, text, position - new Vector2(-135 + subFont.MeasureString(text).X,
+                            subFont.MeasureString(text).Y / 2), Color.Black);
+                    }
                 }
             }
         }

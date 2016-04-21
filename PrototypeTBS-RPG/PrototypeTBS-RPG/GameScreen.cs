@@ -35,9 +35,11 @@ namespace PrototypeTBS_RPG
         private bool movingScreen = false;
         private bool renderMenu = false;
         private bool renderAttackMenu = false;
+        private bool renderHealMenu = false;
         private bool renderMoveMenu = false;
 
         private List<Tile> attackableTiles;
+        private List<Tile> healableTiles;
         private List<Character> deadCharacters;
 
         private MouseState oldMouseState;
@@ -58,6 +60,7 @@ namespace PrototypeTBS_RPG
 
             //Temp
             characters.Add(Game1.Seth);
+            characters.Add(Game1.Clarisa);
             characters.Add(new DefaultEnemy(content, Game1.Archer, 2, new List<Item>() { Game1.IronBow, Game1.HealTonic }));
             characters.Add(new DefaultEnemy(content, Game1.Cavalier, 3, new List<Item>() { Game1.SteelLance }));
             characters.Add(new DefaultEnemy(content, Game1.Knight, 5, new List<Item>() { Game1.IronSword }));
@@ -214,6 +217,7 @@ namespace PrototypeTBS_RPG
 
             bool hasChar = false;
             bool canAttack = false;
+            bool canHeal = false;
 
             //Loop through map to find selectedTile in map
             for (int y = 0; y < map.GetLength(0); y++)
@@ -236,17 +240,32 @@ namespace PrototypeTBS_RPG
 
                 if (eqWpn != null && selectedTile.charOnTile.alliance == alliances.player && selectedTile.charOnTile.active)
                 {
-                    attackableTiles = new List<Tile>();
+                    if (eqWpn is Staff) 
+                    {
+                        healableTiles = new List<Tile>();
 
-                    FindAttackableTile(selectedTile.charOnTile.alliance, selectedTile, eqWpn.maxRange, eqWpn.minRange, eqWpn.maxRange);
+                        FindHealableTiles(selectedTile.charOnTile, selectedTile, eqWpn.maxRange, eqWpn.minRange, eqWpn.maxRange);
 
-                    if (attackableTiles.Count > 0)
-                        canAttack = true;
+                        if (healableTiles.Count > 0)
+                            canHeal = true;
+                    }
+                    else 
+                    {
+                        attackableTiles = new List<Tile>();
+
+                        FindAttackableTile(selectedTile.charOnTile.alliance, selectedTile, eqWpn.maxRange, eqWpn.minRange, eqWpn.maxRange);
+
+                        if (attackableTiles.Count > 0)
+                            canAttack = true;
+                    }
                 }
             }
 
             if (canAttack)
                 menu.Add(new PopupMenuBar(content, "Attack", new EventHandler(AttackMenuEvent)));
+
+            if (canHeal)
+                menu.Add(new PopupMenuBar(content, "Staff", new EventHandler(HealMenuEvent)));
 
             if (hasChar)
             {
@@ -399,6 +418,66 @@ namespace PrototypeTBS_RPG
             }
         }
 
+        private void FindHealableTiles(Character healer, Tile currentTile, int rangeLeft, int minRange, int maxRange)
+        {
+            //Make sure that tile is still in range
+            if (rangeLeft < 0)
+                return;
+
+            //Check if enemy exists and is in range
+            if (currentTile.charOnTile != null && currentTile.charOnTile.alliance == healer.alliance && 
+                currentTile.charOnTile != healer && currentTile.charOnTile.currentHp < currentTile.charOnTile.hp && 
+                maxRange - rangeLeft <= maxRange && maxRange - rangeLeft >= minRange)
+            {
+                healableTiles.Add(currentTile);
+            }
+
+            //If tile is on the edge of character's range, no need to check more tiles
+            if (rangeLeft == 0)
+                return;
+
+            //Find currentTile's index
+            int currentY = 0;
+            int currentX = 0;
+            for (int y = 0; y < map.GetLength(0); y++)
+            {
+                for (int x = 0; x < map.GetLength(1); x++)
+                {
+                    if (map[y, x].Equals(currentTile))
+                    {
+                        currentY = y;
+                        currentX = x;
+                    }
+                }
+            }
+
+            //Check tiles in all 4 directions
+            if (currentY > 0) //Up
+            {
+                Tile checkTile = map[currentY - 1, currentX];
+
+                FindHealableTiles(healer, checkTile, rangeLeft - 1, minRange, maxRange);
+            }
+            if (currentX < map.GetLength(1) - 1) //Right 
+            {
+                Tile checkTile = map[currentY, currentX + 1];
+
+                FindHealableTiles(healer, checkTile, rangeLeft - 1, minRange, maxRange);
+            }
+            if (currentY < map.GetLength(0) - 1) //Down
+            {
+                Tile checkTile = map[currentY + 1, currentX];
+
+                FindHealableTiles(healer, checkTile, rangeLeft - 1, minRange, maxRange);
+            }
+            if (currentX > 0) //Left
+            {
+                Tile checkTile = map[currentY, currentX - 1];
+
+                FindHealableTiles(healer, checkTile, rangeLeft - 1, minRange, maxRange);
+            }
+        }
+
         private void MoveMenuEvent(object sender, EventArgs e)
         {
             renderMenu = false;
@@ -418,6 +497,21 @@ namespace PrototypeTBS_RPG
                 {
                     if (tile == atkTile)
                         tile.attackable = true;
+                }
+            }
+        }
+
+        private void HealMenuEvent(object sender, EventArgs e)
+        {
+            renderHealMenu = true;
+            renderMenu = false;
+
+            foreach (Tile tile in map)
+            {
+                foreach (Tile healTile in healableTiles)
+                {
+                    if (tile == healTile)
+                        tile.healable = true;
                 }
             }
         }
@@ -506,7 +600,7 @@ namespace PrototypeTBS_RPG
             {
                 if (selectedTile != null)
                 {
-                    if (!renderMenu && !renderAttackMenu && !renderMoveMenu)
+                    if (!renderMenu && !renderAttackMenu && !renderMoveMenu && !renderHealMenu)
                     {
                         menuTile = selectedTile;
                         renderMenu = true;
@@ -598,6 +692,18 @@ namespace PrototypeTBS_RPG
                             if (tile.movable)
                                 tile.movable = false;
                         }
+                    }
+                    else if (renderHealMenu && selectedTile.healable)
+                    {
+                        (menuTile.charOnTile.equipedWeapon as Staff).Heal(menuTile.charOnTile, selectedTile.charOnTile);
+                        menuTile.charOnTile.active = false;
+
+                        renderHealMenu = false;
+                        foreach (Tile tile in healableTiles)
+                        {
+                            tile.healable = false;
+                        }
+                        healableTiles = new List<Tile>();
                     }
                 }
                 

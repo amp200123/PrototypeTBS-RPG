@@ -26,7 +26,9 @@ namespace PrototypeTBS_RPG
         public static Weapon FireTome;
         public static Weapon LightningTome;
         public static Weapon CorruptTome;
+        public static Staff HealStaff;
         public static Tonic HealTonic;
+        public static Tonic Elixir;
 
         //Static Specializations
         public static Specialization Knight;
@@ -38,9 +40,11 @@ namespace PrototypeTBS_RPG
         public static Specialization Mage;
         public static Specialization Priest;
         public static Specialization Shaman;
+        public static Specialization Cleric;
 
         //Static Characters
         public static Character Seth;
+        public static Character Clarisa;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -94,7 +98,9 @@ namespace PrototypeTBS_RPG
             FireTome = new Weapon(Content.Load<Texture2D>("Items/FireTome"), "Fire", weaponType.elementalMagic, 5, 0, 90, 1, 2, true);
             LightningTome = new Weapon(Content.Load<Texture2D>("Items/LightningTome"), "Lighting", weaponType.lightMagic, 4, 0, 100, 1, 2, true);
             CorruptTome = new Weapon(Content.Load<Texture2D>("Items/CorruptTome"), "Corrupt", weaponType.darkMagic, 6, 0, 70, 1, 2, true);
-            HealTonic = new Tonic(Content);
+            HealStaff = new Staff(Content.Load<Texture2D>("Items/Heal"), "Heal", 10, 1, 1);
+            HealTonic = new Tonic(Content.Load<Texture2D>("Items/Tonic"), "Tonic", 10);
+            Elixir = new Tonic(Content.Load<Texture2D>("Items/Elixir"), "Elixir", 1000);
 
             Knight = new Specialization(Content.Load<Texture2D>("Sprites/Knight"), "Knight", false,
                 new List<weaponType>() { weaponType.sword }, 16, 6, 1, 3, 5, 4, 8, 3, 5);
@@ -114,9 +120,13 @@ namespace PrototypeTBS_RPG
                 new List<weaponType>() { weaponType.lightMagic }, 11, 0, 7, 5, 7, 7, 2, 8, 5);
             Shaman = new Specialization(Content.Load<Texture2D>("Sprites/Shaman"), "Shaman", false,
                 new List<weaponType>() { weaponType.darkMagic }, 14, 4, 6, 4, 6, 4, 4, 6, 5);
+            Cleric = new Specialization(Content.Load<Texture2D>("Sprites/Cleric"), "Cleric", false,
+                new List<weaponType>() { weaponType.staff }, 12, 3, 7, 4, 3, 7, 2, 7, 5);
 
             Seth = new Character(Content, "Seth", Knight, alliances.player, 5, 25, 12, 0, 6, 9, 8, 15, 2, 5,
                 .7f, .5f, 0f, .3f, .35f, .3f, .65f, .15f, new List<Item>() { SteelSword, HealTonic });
+            Clarisa = new Character(Content, "Clarisa", Cleric, alliances.player, .4f, .1f, .8f, .25f, .4f, .6f, .2f, .7f, 
+                new List<Item>() { HealStaff, Elixir, HealTonic });
 
 
             gameScreen = new GameScreen(Content, new EventHandler(GameScreenEvent), "testLevel");
