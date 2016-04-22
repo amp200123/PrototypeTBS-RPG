@@ -48,6 +48,7 @@
     <Compile Include="InventoryBar.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Staff.cs" />
+    <Compile Include="TileBar.cs" />
     <Compile Include="Tonic.cs" />
     <Compile Include="LevelUpScreen.cs" />
     <Compile Include="MiniMenuBar.cs" />
@@ -91,6 +92,7 @@
     <Content Include="Content\Misc\MiniMenuBar-Selected.png" />
     <Content Include="Content\Misc\MiniMenuBar.png" />
     <Content Include="Content\Misc\RedHealthBar.png" />
+    <Content Include="Content\Misc\TileBar.png" />
     <Content Include="Content\Sprites\Archer.png" />
     <Content Include="Content\Sprites\Cavalier.png" />
     <Content Include="Content\Sprites\Cleric.png" />

@@ -11,6 +11,7 @@ namespace PrototypeTBS_RPG
 
     class Tile : GameObject
     {
+        public string name { get; private set; }
         public int defense { get; private set; }
         public int health { get; private set; }
         public int movement { get; private set; }
@@ -54,8 +55,9 @@ namespace PrototypeTBS_RPG
         private Texture2D healableTile;
         private Texture2D movableTile;
 
-        public Tile(ContentManager content, Texture2D texture, int defense, int health, int movement) : base(texture)
+        public Tile(ContentManager content, Texture2D texture, string name, int defense, int health, int movement) : base(texture)
         {
+            this.name = name;
             this.defense = defense;
             this.health = health;
             this.movement = movement;

@@ -29,6 +29,7 @@ namespace PrototypeTBS_RPG
 
         private Random random;
         private ContentManager content;
+        private TileBar tileBar;
         private List<PopupMenuBar> menuItems;
 
         private turnStatus turn = turnStatus.beforePlayer;
@@ -38,6 +39,7 @@ namespace PrototypeTBS_RPG
         private bool renderHealMenu = false;
         private bool renderMoveMenu = false;
 
+        private List<Tile> startTiles;
         private List<Tile> attackableTiles;
         private List<Tile> healableTiles;
         private List<Character> deadCharacters;
@@ -58,17 +60,7 @@ namespace PrototypeTBS_RPG
             characters = new List<Character>();
             deadCharacters = new List<Character>();
 
-            //Temp
-            characters.Add(Game1.Seth);
-            characters.Add(Game1.Clarisa);
-            characters.Add(new DefaultEnemy(content, Game1.Archer, 2, new List<Item>() { Game1.IronBow, Game1.HealTonic }));
-            characters.Add(new DefaultEnemy(content, Game1.Cavalier, 3, new List<Item>() { Game1.SteelLance }));
-            characters.Add(new DefaultEnemy(content, Game1.Knight, 5, new List<Item>() { Game1.IronSword }));
-            characters.Add(new DefaultEnemy(content, Game1.Shaman, 5, new List<Item>() { Game1.CorruptTome }));
-
-            //End Temp
-
-            map = ImportLevel(content, fileName);
+            ImportLevel(content, fileName);
 
             int centerTileY = (int)(Math.Round(map.GetLength(0) / 2.0f)) - 1;
             int centerTileX = (int)(Math.Round(map.GetLength(1) / 2.0f)) - 1;
@@ -97,12 +89,6 @@ namespace PrototypeTBS_RPG
                     else if (x > centerTileX)
                         map[y, x].position.X = centerTile.position.X + (40 * (x - centerTileX));
                 }
-            }
-
-            //Temp
-            foreach (Character ch in characters)
-            {
-                map[random.Next(map.GetLength(0)), random.Next(map.GetLength(1))].charOnTile = ch;
             }
         }
 
@@ -146,6 +132,9 @@ namespace PrototypeTBS_RPG
                     menuBar.Draw(spritebatch);
                 }
             }
+
+            if (tileBar != null)
+                tileBar.Draw(spritebatch);
         }
 
         private void MoveScreen(float x, float y)
@@ -161,7 +150,7 @@ namespace PrototypeTBS_RPG
             MoveScreen(vector.X, vector.Y);
         }
 
-        private Tile[,] ImportLevel(ContentManager content, string fileName)
+        private void ImportLevel(ContentManager content, string fileName)
         {
             fileName = "content/Levels/" + fileName + ".txt";
 
@@ -169,14 +158,23 @@ namespace PrototypeTBS_RPG
             {
                 StreamReader inFile = File.OpenText(fileName);
 
+                // Read map layout
+                
                 List<string> lines = new List<string>();
 
-                while (!inFile.EndOfStream)
+                while (true)
                 {
-                    lines.Add(inFile.ReadLine());
+                    string line = inFile.ReadLine();
+
+                    if (line.StartsWith("#"))
+                        continue;
+
+                    if (!string.IsNullOrEmpty(line))
+                        lines.Add(line);
+                    else break;
                 }
 
-                Tile[,] map = new Tile[lines.Count, lines[0].Length];
+                map = new Tile[lines.Count, lines[0].Length];
 
                 for (int i = 0; i < lines.Count; i++)
                 {
@@ -189,13 +187,13 @@ namespace PrototypeTBS_RPG
                         switch (characters[j])
                         {
                             case ('p'):
-                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), 0, 0, 1);
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), "Plains", 0, 0, 1);
                                 break;
                             case ('f'):
-                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Forest"), 4, 0, 2);
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Forest"), "Forest", 4, 0, 2);
                                 break;
                             default:
-                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), 0, 0, 1);
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), "Plains", 0, 0, 1);
                                 break;
                         }
 
@@ -203,7 +201,153 @@ namespace PrototypeTBS_RPG
                     }
                 }
 
-                return map;
+                //Read starting tile location
+
+                lines = new List<string>();
+
+                while (true)
+                {
+                    string line = inFile.ReadLine();
+
+                    if (line.StartsWith("#"))
+                        continue;
+
+                    if (!string.IsNullOrEmpty(line))
+                        lines.Add(line);
+                    else break;
+                }
+
+                foreach (string line in lines)
+                {
+                    startTiles = new List<Tile>();
+                    string[] coords = line.Split(new string[] { "," }, StringSplitOptions.None);
+
+                    startTiles.Add(map[Convert.ToInt32(coords[0]), Convert.ToInt32(coords[1])]);
+                }
+
+                //Read enemys and their placement
+
+                lines = new List<string>();
+
+                while (true)
+                {
+                    string line = inFile.ReadLine();
+
+                    if (line != null && line.StartsWith("#"))
+                        continue;
+
+                    if (!string.IsNullOrEmpty(line))
+                        lines.Add(line);
+                    else break;
+                }
+
+                foreach (string line in lines)
+                {
+                    Specialization spec;
+                    int level;
+                    int y;
+                    int x;
+                    List<Item> inventory = new List<Item>();
+
+                    string[] parts = line.Split(new string[] {","}, StringSplitOptions.None);
+
+                    //Spec
+                    switch (parts[0].ToLower()) // Spec
+                    {
+                        case "spearfighter":
+                            spec = Game1.SpearFighter;
+                            break;
+                        case "warrior":
+                            spec = Game1.Warrior;
+                            break;
+                        case "archer":
+                            spec = Game1.Archer;
+                            break;
+                        case "swordsman":
+                            spec = Game1.Swordsman;
+                            break;
+                        case "cavalier":
+                            spec = Game1.Cavalier;
+                            break;
+                        case "mage":
+                            spec = Game1.Mage;
+                            break;
+                        case "priest":
+                            spec = Game1.Priest;
+                            break;
+                        case "shaman":
+                            spec = Game1.Shaman;
+                            break;
+                        case "cleric":
+                            spec = Game1.Cleric;
+                            break;
+                        default:
+                            spec = Game1.Knight;
+                            break;
+                    }
+
+                    level = Convert.ToInt32(parts[1]);
+                    x = Convert.ToInt32(parts[2]);
+                    y = Convert.ToInt32(parts[3]);
+
+                    if (parts.Length > 4) 
+                    {
+                        for (int i = 4; i < parts.Length; i++) 
+                        {
+                            switch (parts[i].ToLower()) 
+                            {
+                                case "ironsword":
+                                    inventory.Add(Game1.IronSword);
+                                    break;
+                                case "steelsword":
+                                    inventory.Add(Game1.SteelSword);
+                                    break;
+                                case "ironlance":
+                                    inventory.Add(Game1.IronLance);
+                                    break;
+                                case "steellance":
+                                    inventory.Add(Game1.SteelLance);
+                                    break;
+                                case "ironaxe":
+                                    inventory.Add(Game1.IronAxe);
+                                    break;
+                                case "steelaxe":
+                                    inventory.Add(Game1.SteelAxe);
+                                    break;
+                                case "ironbow":
+                                    inventory.Add(Game1.IronBow);
+                                    break;
+                                case "steelbow":
+                                    inventory.Add(Game1.SteelBow);
+                                    break;
+                                case "firetome":
+                                    inventory.Add(Game1.FireTome);
+                                    break;
+                                case "lightningtome":
+                                    inventory.Add(Game1.LightningTome);
+                                    break;
+                                case "corrupttome":
+                                    inventory.Add(Game1.CorruptTome);
+                                    break;
+                                case "healstaff":
+                                    inventory.Add(Game1.HealStaff);
+                                    break;
+                                case "healtonic":
+                                    inventory.Add(Game1.HealTonic);
+                                    break;
+                                case "elixir":
+                                    inventory.Add(Game1.Elixir);
+                                    break;
+                            }
+                        }
+                    }
+
+
+                    Character character = new DefaultEnemy(content, spec, level, inventory);
+
+                    characters.Add(character);
+                    map[y, x].charOnTile = character;
+                }
 
             }
             else throw new FileNotFoundException();
@@ -565,6 +709,7 @@ namespace PrototypeTBS_RPG
             if (!renderMenu)
             {
                 selectedTile = null;
+                tileBar = null;
                 foreach (Tile tile in map)
                 {
                     if (newMouseState.X <= tile.boundingRectangle.Right && newMouseState.X > tile.boundingRectangle.Left &&
@@ -572,6 +717,7 @@ namespace PrototypeTBS_RPG
                     {
                         tile.isSelected = true;
                         selectedTile = tile;
+                        tileBar = new TileBar(content, selectedTile);
                     }
                     else tile.isSelected = false;
                 }
