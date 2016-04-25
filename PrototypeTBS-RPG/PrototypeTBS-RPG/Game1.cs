@@ -14,6 +14,10 @@ namespace PrototypeTBS_RPG
         public const int WINDOW_WIDTH = 800;
         public const int WINDOW_HEIGHT = 480;
 
+        //Save data
+        public static List<Character> playerParty;
+        public static int currentLevel = 1;
+
         //Static Items
         public static Weapon IronSword;
         public static Weapon SteelSword;
@@ -49,6 +53,7 @@ namespace PrototypeTBS_RPG
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        MainMenuScreen mainMenuScreen;
         GameScreen gameScreen;
         Screen currentScreen;
 
@@ -129,8 +134,10 @@ namespace PrototypeTBS_RPG
                 new List<Item>() { HealStaff, Elixir, HealTonic });
 
 
+            mainMenuScreen = new MainMenuScreen(Content, new EventHandler(MainMenuScreenEvent));
             gameScreen = new GameScreen(Content, new EventHandler(GameScreenEvent), "testLevel");
-            currentScreen = gameScreen;
+
+            currentScreen = mainMenuScreen;
         }
 
         /// <summary>
@@ -181,6 +188,22 @@ namespace PrototypeTBS_RPG
             {
                 currentScreen = new LevelUpScreen((e as LevelUpEventArgs).character,
                     Content, new EventHandler(LevelUpScreenEvent));
+            }
+        }
+
+        private void MainMenuScreenEvent(object sender, EventArgs e)
+        {
+            switch (mainMenuScreen.selectedOption)
+            {
+                case 0:
+                    currentScreen = gameScreen;
+                    break;
+                case 1:
+
+                    break;
+                case 2:
+                    Environment.Exit(1);
+                    break;
             }
         }
 

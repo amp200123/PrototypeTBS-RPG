@@ -24,6 +24,7 @@ namespace PrototypeTBS_RPG
         public Tile[,] map { get; private set; }
         public Tile selectedTile { get; private set; }
         public Tile menuTile { get; private set; }
+        public int characterLimit { get; private set; }
 
         private List<Character> characters;
 
@@ -40,6 +41,7 @@ namespace PrototypeTBS_RPG
         private bool renderMoveMenu = false;
 
         private List<Tile> startTiles;
+
         private List<Tile> attackableTiles;
         private List<Tile> healableTiles;
         private List<Character> deadCharacters;
@@ -61,6 +63,8 @@ namespace PrototypeTBS_RPG
             deadCharacters = new List<Character>();
 
             ImportLevel(content, fileName);
+
+            characterLimit = startTiles.Count;
 
             int centerTileY = (int)(Math.Round(map.GetLength(0) / 2.0f)) - 1;
             int centerTileX = (int)(Math.Round(map.GetLength(1) / 2.0f)) - 1;

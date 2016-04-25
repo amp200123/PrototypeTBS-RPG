@@ -39,6 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Character.cs" />
+    <Compile Include="CharacterBar.cs" />
     <Compile Include="CharacterProfileScreen.cs" />
     <Compile Include="DefaultEnemy.cs" />
     <Compile Include="EventArgs.cs" />
@@ -47,6 +48,9 @@
     <Compile Include="GameScreen.cs" />
     <Compile Include="InventoryBar.cs" />
     <Compile Include="Item.cs" />
+    <Compile Include="MainMenuScreen.cs" />
+    <Compile Include="PreGameScreen.cs" />
+    <Compile Include="SelectCharactersScreen.cs" />
     <Compile Include="Staff.cs" />
     <Compile Include="TileBar.cs" />
     <Compile Include="Tonic.cs" />
@@ -83,6 +87,7 @@
     <Content Include="Content\Items\SteelSword.png" />
     <Content Include="Content\Items\Tonic.png" />
     <Content Include="Content\Levels\testLevel.txt" />
+    <Content Include="Content\Misc\CharacterBar.png" />
     <Content Include="Content\Misc\GrayHealthBar.png" />
     <Content Include="Content\Misc\InventoryBar-Selected.png" />
     <Content Include="Content\Misc\InventoryBar.png" />
