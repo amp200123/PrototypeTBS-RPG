@@ -23,6 +23,8 @@ namespace PrototypeTBS_RPG
             this.game = game;
 
             selectScreen = new SelectCharactersScreen(content, new EventHandler(SelectedScreenEvent));
+
+            currentScreen = selectScreen;
         }
 
         public override void Update(GameTime gameTime)

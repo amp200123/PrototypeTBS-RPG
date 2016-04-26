@@ -134,6 +134,10 @@ namespace PrototypeTBS_RPG
                 new List<Item>() { HealStaff, Elixir, HealTonic });
 
 
+            //Temp
+            playerParty = new List<Character>() { Seth, Clarisa };
+
+
             mainMenuScreen = new MainMenuScreen(Content, new EventHandler(MainMenuScreenEvent));
             gameScreen = new GameScreen(Content, new EventHandler(GameScreenEvent), "testLevel");
 
@@ -196,7 +200,7 @@ namespace PrototypeTBS_RPG
             switch (mainMenuScreen.selectedOption)
             {
                 case 0:
-                    currentScreen = gameScreen;
+                    currentScreen = new PreGameScreen(Content, new EventHandler(PreGameScreenEvent), gameScreen);
                     break;
                 case 1:
 
@@ -205,6 +209,11 @@ namespace PrototypeTBS_RPG
                     Environment.Exit(1);
                     break;
             }
+        }
+
+        private void PreGameScreenEvent(object sender, EventArgs e)
+        {
+            currentScreen = gameScreen;
         }
 
         private void CharacterProfileScreenEvent(object sender, EventArgs e)

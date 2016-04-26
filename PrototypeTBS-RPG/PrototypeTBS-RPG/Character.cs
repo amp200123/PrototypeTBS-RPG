@@ -19,7 +19,7 @@ namespace PrototypeTBS_RPG
         public Tile tile;
         public bool canMove;
         public bool active;
-        public Texture2D texture { get { return spec.sprite } }
+        public Texture2D texture { get { return spec.sprite; } }
         public alliances alliance { get; protected set; }
         public Specialization spec { get; protected set; }
         public List<Item> inventory { get; protected set; }
