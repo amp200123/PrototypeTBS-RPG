@@ -199,13 +199,13 @@ namespace PrototypeTBS_RPG
         {
             switch (mainMenuScreen.selectedOption)
             {
-                case 0:
+                case 1: //Play
                     currentScreen = new PreGameScreen(Content, new EventHandler(PreGameScreenEvent), gameScreen);
                     break;
-                case 1:
+                case 2: //Options
 
                     break;
-                case 2:
+                case 3: //Exit
                     Environment.Exit(1);
                     break;
             }
@@ -213,7 +213,11 @@ namespace PrototypeTBS_RPG
 
         private void PreGameScreenEvent(object sender, EventArgs e)
         {
-            currentScreen = gameScreen;
+            if ((currentScreen as PreGameScreen).game != null)
+            {
+                gameScreen = (currentScreen as PreGameScreen).game;
+                currentScreen = gameScreen;
+            }
         }
 
         private void CharacterProfileScreenEvent(object sender, EventArgs e)

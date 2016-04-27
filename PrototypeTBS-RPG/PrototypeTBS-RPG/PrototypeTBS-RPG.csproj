@@ -49,6 +49,7 @@
     <Compile Include="InventoryBar.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="MainMenuScreen.cs" />
+    <Compile Include="MainPreGameScreen.cs" />
     <Compile Include="PreGameScreen.cs" />
     <Compile Include="SelectCharactersScreen.cs" />
     <Compile Include="Staff.cs" />

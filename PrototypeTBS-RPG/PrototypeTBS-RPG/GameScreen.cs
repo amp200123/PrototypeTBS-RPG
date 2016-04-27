@@ -716,8 +716,7 @@ namespace PrototypeTBS_RPG
                 tileBar = null;
                 foreach (Tile tile in map)
                 {
-                    if (newMouseState.X <= tile.boundingRectangle.Right && newMouseState.X > tile.boundingRectangle.Left &&
-                        newMouseState.Y <= tile.boundingRectangle.Bottom && newMouseState.Y > tile.boundingRectangle.Top)
+                    if (tile.boundingRectangle.Contains(newMouseState.Position))
                     {
                         tile.isSelected = true;
                         selectedTile = tile;
@@ -732,9 +731,7 @@ namespace PrototypeTBS_RPG
             PopupMenuBar selectedMenu = null;
             foreach (PopupMenuBar menuItem in menuItems)
             {
-                if (renderMenu &&
-                    newMouseState.X <= menuItem.boundingRectangle.Right && newMouseState.X > menuItem.boundingRectangle.Left &&
-                    newMouseState.Y <= menuItem.boundingRectangle.Bottom && newMouseState.Y > menuItem.boundingRectangle.Top)
+                if (renderMenu && menuItem.boundingRectangle.Contains(newMouseState.Position))
                 {
                     menuItem.isSelected = true;
                     selectedMenu = menuItem;

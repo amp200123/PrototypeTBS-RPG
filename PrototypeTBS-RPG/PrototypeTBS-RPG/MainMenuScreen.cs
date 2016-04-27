@@ -11,43 +11,48 @@ namespace PrototypeTBS_RPG
 {
     class MainMenuScreen : Screen
     {
-        private const int OPTIONS_COUNT = 3; // Play, Options, Exit
-
         public int selectedOption { get; private set; }
 
+        private Rectangle playRec, optionRec, exitRec;
         private SpriteFont optionsFont;
 
-        private KeyboardState oldState = Keyboard.GetState();
+        private MouseState oldMouseState;
 
         public MainMenuScreen(ContentManager content, EventHandler screenEvent)
             : base(screenEvent)
         {
             optionsFont = content.Load<SpriteFont>("Fonts/MenuBarFont");
 
-            //Defualt selected option
+            //Default selected option is 0; none
             selectedOption = 0;
+
+            playRec = new Rectangle((int)(Game1.WINDOW_WIDTH / 2) - (int)(optionsFont.MeasureString("Play").X / 2),
+                200 - (int)(optionsFont.MeasureString("Play").Y / 2), (int)optionsFont.MeasureString("Play").X, 
+                (int)optionsFont.MeasureString("Play").Y);
+            optionRec = new Rectangle((int)(Game1.WINDOW_WIDTH / 2) - (int)(optionsFont.MeasureString("Options").X / 2),
+                250 - (int)(optionsFont.MeasureString("Options").Y / 2), (int)optionsFont.MeasureString("Options").X,
+                (int)optionsFont.MeasureString("Options").Y);
+            exitRec = new Rectangle((int)(Game1.WINDOW_WIDTH / 2) - (int)(optionsFont.MeasureString("Exit").X / 2),
+                300 - (int)(optionsFont.MeasureString("Exit").Y / 2), (int)optionsFont.MeasureString("Exit").X,
+                (int)optionsFont.MeasureString("Exit").Y);
         }
 
         public override void Update(GameTime gameTime)
         {
-            KeyboardState newState = Keyboard.GetState();
+            MouseState newMouseState = Mouse.GetState();
 
-            if (newState.IsKeyDown(Keys.Down) && oldState.IsKeyUp(Keys.Down))
-            {
-                selectedOption++;
-                selectedOption %= OPTIONS_COUNT;
-            }
-            else if (newState.IsKeyDown(Keys.Up) && oldState.IsKeyUp(Keys.Up))
-            {
-                selectedOption--;
-                if (selectedOption < 0)
-                    selectedOption = OPTIONS_COUNT - 1;
-            }
+            if (playRec.Contains(newMouseState.Position))
+                selectedOption = 1;
+            else if (optionRec.Contains(newMouseState.Position))
+                selectedOption = 2;
+            else if (exitRec.Contains(newMouseState.Position))
+                selectedOption = 3;
+            else selectedOption = 0;
 
-            if (newState.IsKeyDown(Keys.Enter) && oldState.IsKeyUp(Keys.Enter))
+            if (newMouseState.LeftButton == ButtonState.Pressed && selectedOption != 0)
                 screenEvent.Invoke(this, new EventArgs());
 
-            oldState = newState;
+            oldMouseState = newMouseState;
         }
 
         public override void Draw(GameTime gameTime, SpriteBatch spritebatch)
@@ -58,24 +63,20 @@ namespace PrototypeTBS_RPG
 
             switch (selectedOption)
             {
-                case 0:
+                case 1:
                     playColor = Color.Red;
                     break;
-                case 1:
+                case 2:
                     optionsColor = Color.Red;
                     break;
-                case 2:
+                case 3:
                     exitColor = Color.Red;
                     break;
             }
 
-            spritebatch.DrawString(optionsFont, "Play", new Vector2(Game1.WINDOW_WIDTH / 2 - optionsFont.MeasureString("Play").X / 2,
-                200 - optionsFont.MeasureString("Play").Y / 2), playColor);
-            spritebatch.DrawString(optionsFont, "Options", new Vector2(Game1.WINDOW_WIDTH / 2 - optionsFont.MeasureString("Options").X / 2,
-                250 - optionsFont.MeasureString("Options").Y / 2), optionsColor);
-            spritebatch.DrawString(optionsFont, "Exit", new Vector2(Game1.WINDOW_WIDTH / 2 - optionsFont.MeasureString("Exit").X / 2,
-                300 - optionsFont.MeasureString("Exit").Y / 2), exitColor);
-
+            spritebatch.DrawString(optionsFont, "Play", playRec.Location.ToVector2(), playColor);
+            spritebatch.DrawString(optionsFont, "Options", optionRec.Location.ToVector2(), optionsColor);
+            spritebatch.DrawString(optionsFont, "Exit", exitRec.Location.ToVector2(), exitColor);
         }
     }
 }

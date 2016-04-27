@@ -10,21 +10,22 @@ namespace PrototypeTBS_RPG
 {
     class PreGameScreen : Screen
     {
+        public GameScreen game { get; private set; }
         public List<Character> selectedChars { get; private set; }
 
         private Screen currentScreen;
+        private MainPreGameScreen menuScreen;
         private SelectCharactersScreen selectScreen;
-
-        private GameScreen game;
 
         public PreGameScreen(ContentManager content, EventHandler screenEvent, GameScreen game)
             : base(screenEvent)
         {
             this.game = game;
 
-            selectScreen = new SelectCharactersScreen(content, new EventHandler(SelectedScreenEvent));
+            menuScreen = new MainPreGameScreen(content, new EventHandler(MenuScreenEvent));
+            selectScreen = new SelectCharactersScreen(content, new EventHandler(SelectedScreenEvent), game.characterLimit);
 
-            currentScreen = selectScreen;
+            currentScreen = menuScreen;
         }
 
         public override void Update(GameTime gameTime)
@@ -37,9 +38,26 @@ namespace PrototypeTBS_RPG
             currentScreen.Draw(gameTime, spritebatch);
         }
 
+        private void MenuScreenEvent(object sender, EventArgs e)
+        {
+            switch (menuScreen.selectedOption)
+            {
+                case 1:
+                    screenEvent.Invoke(this, new EventArgs());
+                    break;
+                case 2:
+                    currentScreen = selectScreen;
+                    break;
+                case 3:
+                    game = null;
+                    screenEvent.Invoke(this, new EventArgs());
+                    break;
+            }
+        }
+
         private void SelectedScreenEvent(object sender, EventArgs e)
         {
-
+            currentScreen = menuScreen;
         }
     }
 }

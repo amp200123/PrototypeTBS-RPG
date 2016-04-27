@@ -14,14 +14,16 @@ namespace PrototypeTBS_RPG
         public List<Character> selectedChars { get; private set; }
 
         private List<CharacterBar> characterBars;
-        private int characterCount;
+        private int characterLimit;
         private bool movingScreen;
 
         private MouseState oldMouseState;
 
-        public SelectCharactersScreen(ContentManager content, EventHandler screenEvent)
+        public SelectCharactersScreen(ContentManager content, EventHandler screenEvent, int characterLimit)
             : base(screenEvent)
         {
+            this.characterLimit = characterLimit;
+
             selectedChars = new List<Character>();
             characterBars = new List<CharacterBar>();
 
@@ -60,11 +62,12 @@ namespace PrototypeTBS_RPG
             {
                 foreach (CharacterBar bar in characterBars)
                 {
-                    if (bar.character != null &&
-                        newMouseState.Position.X > bar.boundingRectangle.Left && newMouseState.Position.X <= bar.boundingRectangle.Right &&
-                        newMouseState.Position.Y > bar.boundingRectangle.Top && newMouseState.Position.Y <= bar.boundingRectangle.Bottom)
+                    if (bar.character != null && bar.boundingRectangle.Contains(newMouseState.Position))
                     {
-                        bar.selected = !bar.selected;
+                        if (bar.selected)
+                            bar.selected = false;
+                        else if (selectedChars.Count < characterLimit)
+                            bar.selected = true;
 
                         if (bar.selected)
                             selectedChars.Add(bar.character);
