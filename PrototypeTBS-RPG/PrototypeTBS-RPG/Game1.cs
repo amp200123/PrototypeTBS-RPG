@@ -218,6 +218,7 @@ namespace PrototypeTBS_RPG
                 gameScreen = (currentScreen as PreGameScreen).game;
                 currentScreen = gameScreen;
             }
+            else currentScreen = mainMenuScreen;
         }
 
         private void CharacterProfileScreenEvent(object sender, EventArgs e)

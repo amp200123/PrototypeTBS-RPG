@@ -17,7 +17,7 @@ namespace PrototypeTBS_RPG
         private int characterLimit;
         private bool movingScreen;
 
-        private MouseState oldMouseState;
+        private MouseState oldMouseState = Mouse.GetState();
 
         public SelectCharactersScreen(ContentManager content, EventHandler screenEvent, int characterLimit)
             : base(screenEvent)
@@ -57,7 +57,7 @@ namespace PrototypeTBS_RPG
         {
             MouseState newMouseState = Mouse.GetState();
 
-            if (oldMouseState.LeftButton == ButtonState.Pressed && newMouseState.LeftButton == ButtonState.Released
+            if (newMouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released
                 && !movingScreen)
             {
                 foreach (CharacterBar bar in characterBars)

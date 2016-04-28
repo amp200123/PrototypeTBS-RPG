@@ -1,19 +1,20 @@
 #Map
 pppppppppppppp
 pppppppppppfpp
-pppppppppppppp
+ppsspppbpppppp
 ppppppfpfppppp
-ppppfpfffppppp
-ppppfffffppppp
-ppppppffpppppp
+ppppfpfffppspp
+ppppfffffppssp
+ppppppffppmpsp
 ppppffpppppppp
-ppppppppfppppp
-pppppppffppppp
-pppppppppppppp
+ppmfppppfppppp
+pmmfmppffpsppp
+ppppppppppsspp
 
 #StartPos
 1,1
 3,2
 
 #Enemies
-spearfighter,5,4,2,steellance
+spearfighter,3,4,2,steellance
+knight,2,6,4,ironsword

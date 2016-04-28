@@ -32,7 +32,11 @@ namespace PrototypeTBS_RPG
                 new Vector2(position.X - font.MeasureString(tile.name).X / 2, (position.Y - Height / 4) - font.MeasureString(tile.name).Y / 2),
                 Color.Black);
 
-            string text = "Dfs: " + tile.defense + " Hp: " + tile.health + " Mov: " + tile.movement;
+            string text = "Dfs: " + tile.defense + " Hp: " + tile.health + " Mov: ";
+
+            if (tile.accessible)
+                text += tile.movement;
+            else text += "n/a";
 
             spritebatch.DrawString(subFont, text,
                 new Vector2(position.X - subFont.MeasureString(text).X / 2, (position.Y + Height / 4) - subFont.MeasureString(text).Y / 2),

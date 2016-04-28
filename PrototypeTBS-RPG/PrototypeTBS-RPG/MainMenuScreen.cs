@@ -16,7 +16,7 @@ namespace PrototypeTBS_RPG
         private Rectangle playRec, optionRec, exitRec;
         private SpriteFont optionsFont;
 
-        private MouseState oldMouseState;
+        private MouseState oldMouseState = Mouse.GetState();
 
         public MainMenuScreen(ContentManager content, EventHandler screenEvent)
             : base(screenEvent)
@@ -49,7 +49,8 @@ namespace PrototypeTBS_RPG
                 selectedOption = 3;
             else selectedOption = 0;
 
-            if (newMouseState.LeftButton == ButtonState.Pressed && selectedOption != 0)
+            if (newMouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released
+                && selectedOption != 0)
                 screenEvent.Invoke(this, new EventArgs());
 
             oldMouseState = newMouseState;

@@ -24,6 +24,7 @@ namespace PrototypeTBS_RPG
         public Tile[,] map { get; private set; }
         public Tile selectedTile { get; private set; }
         public Tile menuTile { get; private set; }
+        public List<Tile> startTiles { get; private set; }
         public int characterLimit { get; private set; }
 
         private List<Character> characters;
@@ -40,14 +41,12 @@ namespace PrototypeTBS_RPG
         private bool renderHealMenu = false;
         private bool renderMoveMenu = false;
 
-        private List<Tile> startTiles;
-
         private List<Tile> attackableTiles;
         private List<Tile> healableTiles;
         private List<Character> deadCharacters;
 
-        private MouseState oldMouseState;
-        private KeyboardState oldKeyState;
+        private MouseState oldMouseState = Mouse.GetState();
+        private KeyboardState oldKeyState = Keyboard.GetState();
 
         public GameScreen(ContentManager content, EventHandler screenEvent, string fileName)
             : base(screenEvent)
@@ -141,6 +140,17 @@ namespace PrototypeTBS_RPG
                 tileBar.Draw(spritebatch);
         }
 
+        public void AddCharacter(Character character, Tile tile)
+        {
+            tile.charOnTile = character;
+            characters.Add(character);
+        }
+
+        public void AddCharacter(Character character, int x, int y)
+        {
+            AddCharacter(character, map[y, x]);
+        }
+
         private void MoveScreen(float x, float y)
         {
             foreach (Tile tile in map)
@@ -191,13 +201,22 @@ namespace PrototypeTBS_RPG
                         switch (characters[j])
                         {
                             case ('p'):
-                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), "Plains", 0, 0, 1);
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), "Plains", 0, 0, 1, true);
                                 break;
                             case ('f'):
-                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Forest"), "Forest", 4, 0, 2);
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Forest"), "Forest", 2, 0, 2, true);
+                                break;
+                            case ('m'):
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Mountain"), "Mountain", 5, 0, 0, false);
+                                break;
+                            case ('b'):
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Fort"), "Fort", 6, 20, 3, true);
+                                break;
+                            case ('s'):
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Marsh"), "Marsh", 0, 0, 2, true);
                                 break;
                             default:
-                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), "Plains", 0, 0, 1);
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Plain"), "Plains", 0, 0, 1, true);
                                 break;
                         }
 
@@ -221,9 +240,9 @@ namespace PrototypeTBS_RPG
                     else break;
                 }
 
+                startTiles = new List<Tile>();
                 foreach (string line in lines)
                 {
-                    startTiles = new List<Tile>();
                     string[] coords = line.Split(new string[] { "," }, StringSplitOptions.None);
 
                     startTiles.Add(map[Convert.ToInt32(coords[0]), Convert.ToInt32(coords[1])]);
@@ -449,7 +468,7 @@ namespace PrototypeTBS_RPG
         private void FindMovableTiles(alliances alliance, Tile currentTile, int movesLeft)
         {
             //Make sure the character has enought movement to move here
-            if (movesLeft < 0)
+            if (movesLeft < 0 || !currentTile.accessible)
                 return;
 
             //Can't move to tile that is occupied
@@ -698,6 +717,13 @@ namespace PrototypeTBS_RPG
             {
                 ch.active = true;
                 ch.canMove = true;
+
+                if (ch.alliance == alliances.player)
+                {
+                    ch.currentHp += (int)Math.Round((ch.tile.health / 100f) * ch.hp);
+                    if (ch.currentHp > ch.hp)
+                        ch.currentHp = ch.hp;
+                }
             }
 
             turn = turnStatus.player;

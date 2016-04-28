@@ -110,7 +110,10 @@
     <Content Include="Content\Sprites\Warrior.png" />
     <Content Include="Content\Tiles\AttackableTile.png" />
     <Content Include="Content\Tiles\Forest.png" />
+    <Content Include="Content\Tiles\Fort.png" />
     <Content Include="Content\Tiles\HealableTile.png" />
+    <Content Include="Content\Tiles\Marsh.png" />
+    <Content Include="Content\Tiles\Mountain.png" />
     <Content Include="Content\Tiles\MovableTile.png" />
     <Content Include="Content\Tiles\SelectedTile.png" />
     <Content Include="Content\Sprites\Knight.png" />

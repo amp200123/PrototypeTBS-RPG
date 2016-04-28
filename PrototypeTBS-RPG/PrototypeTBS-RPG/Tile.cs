@@ -15,6 +15,7 @@ namespace PrototypeTBS_RPG
         public int defense { get; private set; }
         public int health { get; private set; }
         public int movement { get; private set; }
+        public bool accessible { get; private set; }
         public Character charOnTile 
         {
             get
@@ -55,12 +56,14 @@ namespace PrototypeTBS_RPG
         private Texture2D healableTile;
         private Texture2D movableTile;
 
-        public Tile(ContentManager content, Texture2D texture, string name, int defense, int health, int movement) : base(texture)
+        public Tile(ContentManager content, Texture2D texture, string name, int defense, int health, int movement, bool accessible)
+            : base(texture)
         {
             this.name = name;
             this.defense = defense;
             this.health = health;
             this.movement = movement;
+            this.accessible = accessible;
 
             selectedTile = content.Load<Texture2D>("Tiles/SelectedTile");
             attackableTile = content.Load<Texture2D>("Tiles/AttackableTile");

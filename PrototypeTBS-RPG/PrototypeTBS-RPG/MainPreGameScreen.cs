@@ -16,7 +16,7 @@ namespace PrototypeTBS_RPG
         private Rectangle startRec, selectCharRec, backRec;
         private SpriteFont optionsFont;
 
-        private MouseState oldMouseState;
+        private MouseState oldMouseState = Mouse.GetState();
 
         public MainPreGameScreen(ContentManager content, EventHandler screenEvent)
             : base(screenEvent)
@@ -27,13 +27,13 @@ namespace PrototypeTBS_RPG
             selectedOption = 0;
 
             startRec = new Rectangle((int)(Game1.WINDOW_WIDTH / 2) - (int)(optionsFont.MeasureString("Start").X / 2),
-                150 - (int)(optionsFont.MeasureString("Start").Y / 2), (int)optionsFont.MeasureString("Start").X,
+                200 - (int)(optionsFont.MeasureString("Start").Y / 2), (int)optionsFont.MeasureString("Start").X,
                 (int)optionsFont.MeasureString("Start").Y);
             selectCharRec = new Rectangle((int)(Game1.WINDOW_WIDTH / 2) - (int)(optionsFont.MeasureString("Select Characters").X / 2),
-                200 - (int)(optionsFont.MeasureString("Select Characters").Y / 2), (int)optionsFont.MeasureString("Select Characters").X,
+                250 - (int)(optionsFont.MeasureString("Select Characters").Y / 2), (int)optionsFont.MeasureString("Select Characters").X,
                 (int)optionsFont.MeasureString("Select Characters").Y);
             backRec = new Rectangle((int)(Game1.WINDOW_WIDTH / 2) - (int)(optionsFont.MeasureString("Back").X / 2),
-                250 - (int)(optionsFont.MeasureString("Back").Y / 2), (int)optionsFont.MeasureString("Back").X,
+                300 - (int)(optionsFont.MeasureString("Back").Y / 2), (int)optionsFont.MeasureString("Back").X,
                 (int)optionsFont.MeasureString("Back").Y);
         }
 
@@ -50,7 +50,8 @@ namespace PrototypeTBS_RPG
             else selectedOption = 0;
 
 
-            if (newMouseState.LeftButton == ButtonState.Pressed && selectedOption != 0)
+            if (newMouseState.LeftButton == ButtonState.Pressed && oldMouseState.LeftButton == ButtonState.Released
+                && selectedOption != 0)
                 screenEvent.Invoke(this, new EventArgs());
 
             oldMouseState = newMouseState;

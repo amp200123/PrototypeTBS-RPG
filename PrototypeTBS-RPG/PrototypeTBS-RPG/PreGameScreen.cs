@@ -11,7 +11,6 @@ namespace PrototypeTBS_RPG
     class PreGameScreen : Screen
     {
         public GameScreen game { get; private set; }
-        public List<Character> selectedChars { get; private set; }
 
         private Screen currentScreen;
         private MainPreGameScreen menuScreen;
@@ -43,7 +42,15 @@ namespace PrototypeTBS_RPG
             switch (menuScreen.selectedOption)
             {
                 case 1:
-                    screenEvent.Invoke(this, new EventArgs());
+                    if (selectScreen.selectedChars.Count != 0)
+                    {
+                        for (int i = 0; i < game.startTiles.Count; i++)
+                        {
+                            game.AddCharacter(selectScreen.selectedChars[i], game.startTiles[i]);
+                        }
+
+                        screenEvent.Invoke(this, new EventArgs());
+                    }
                     break;
                 case 2:
                     currentScreen = selectScreen;
