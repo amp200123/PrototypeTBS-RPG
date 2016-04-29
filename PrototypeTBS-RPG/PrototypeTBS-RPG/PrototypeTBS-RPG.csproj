@@ -81,6 +81,7 @@
     <Content Include="Content\Items\Elixir.png" />
     <Content Include="Content\Items\FireTome.png" />
     <Content Include="Content\Items\Heal.png" />
+    <Content Include="Content\Items\LightLance.png" />
     <Content Include="Content\Items\LightningTome.png" />
     <Content Include="Content\Items\SteelAxe.png" />
     <Content Include="Content\Items\SteelBow.png" />
@@ -102,6 +103,7 @@
     <Content Include="Content\Sprites\Archer.png" />
     <Content Include="Content\Sprites\Cavalier.png" />
     <Content Include="Content\Sprites\Cleric.png" />
+    <Content Include="Content\Sprites\FalcoKnight.png" />
     <Content Include="Content\Sprites\Mage.png" />
     <Content Include="Content\Sprites\Priest.png" />
     <Content Include="Content\Sprites\Shaman.png" />

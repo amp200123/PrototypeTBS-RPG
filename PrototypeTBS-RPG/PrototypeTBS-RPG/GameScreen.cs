@@ -207,7 +207,7 @@ namespace PrototypeTBS_RPG
                                 tile = new Tile(content, content.Load<Texture2D>("Tiles/Forest"), "Forest", 2, 0, 2, true);
                                 break;
                             case ('m'):
-                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Mountain"), "Mountain", 5, 0, 0, false);
+                                tile = new Tile(content, content.Load<Texture2D>("Tiles/Mountain"), "Mountain", 5, 0, 1, false);
                                 break;
                             case ('b'):
                                 tile = new Tile(content, content.Load<Texture2D>("Tiles/Fort"), "Fort", 6, 20, 3, true);
@@ -303,6 +303,9 @@ namespace PrototypeTBS_RPG
                             break;
                         case "cleric":
                             spec = Game1.Cleric;
+                            break;
+                        case "falcoknight":
+                            spec = Game1.FalcoKnight;
                             break;
                         default:
                             spec = Game1.Knight;
@@ -465,10 +468,10 @@ namespace PrototypeTBS_RPG
         /// </summary>
         /// <param name="currentTile">Current to find tiles from</param>
         /// <param name="movesLeft">Amount of movements left</param>
-        private void FindMovableTiles(alliances alliance, Tile currentTile, int movesLeft)
+        private void FindMovableTiles(alliances alliance, Tile currentTile, int movesLeft, bool flying)
         {
             //Make sure the character has enought movement to move here
-            if (movesLeft < 0 || !currentTile.accessible)
+            if (movesLeft < 0 || (!currentTile.accessible && !flying))
                 return;
 
             //Can't move to tile that is occupied
@@ -504,25 +507,45 @@ namespace PrototypeTBS_RPG
             {
                 Tile checkTile = map[currentY - 1, currentX];
 
-                FindMovableTiles(alliance, checkTile, movesLeft - checkTile.movement);
+                int movement;
+                if (flying)
+                    movement = movesLeft - 1;
+                else movement = movesLeft - checkTile.movement;
+
+                FindMovableTiles(alliance, checkTile, movement, flying);
             }
             if (currentX < map.GetLength(1) - 1) //Right 
             {
                 Tile checkTile = map[currentY, currentX + 1];
 
-                FindMovableTiles(alliance, checkTile, movesLeft - checkTile.movement);
+                int movement;
+                if (flying)
+                    movement = movesLeft - 1;
+                else movement = movesLeft - checkTile.movement;
+
+                FindMovableTiles(alliance, checkTile, movement, flying);
             }
             if (currentY < map.GetLength(0) - 1) //Down
             {
                 Tile checkTile = map[currentY + 1, currentX];
 
-                FindMovableTiles(alliance, checkTile, movesLeft - checkTile.movement);
+                int movement;
+                if (flying)
+                    movement = movesLeft - 1;
+                else movement = movesLeft - checkTile.movement;
+
+                FindMovableTiles(alliance, checkTile, movement, flying);
             }
             if (currentX > 0) //Left
             {
                 Tile checkTile = map[currentY, currentX - 1];
 
-                FindMovableTiles(alliance, checkTile, movesLeft - checkTile.movement);
+                int movement;
+                if (flying)
+                    movement = movesLeft - 1;
+                else movement = movesLeft - checkTile.movement;
+
+                FindMovableTiles(alliance, checkTile, movement, flying);
             }
         }
 
@@ -650,7 +673,7 @@ namespace PrototypeTBS_RPG
             renderMenu = false;
             renderMoveMenu = true;
 
-            FindMovableTiles(alliances.player, selectedTile, selectedTile.charOnTile.movement);
+            FindMovableTiles(alliances.player, selectedTile, selectedTile.charOnTile.movement, selectedTile.charOnTile.spec.canFly);
         }
 
         private void AttackMenuEvent(object sender, EventArgs e)

@@ -33,6 +33,7 @@ namespace PrototypeTBS_RPG
         public static Staff HealStaff;
         public static Tonic HealTonic;
         public static Tonic Elixir;
+        public static Weapon LightLance;
 
         //Static Specializations
         public static Specialization Knight;
@@ -45,10 +46,12 @@ namespace PrototypeTBS_RPG
         public static Specialization Priest;
         public static Specialization Shaman;
         public static Specialization Cleric;
+        public static Specialization FalcoKnight;
 
         //Static Characters
         public static Character Seth;
         public static Character Clarisa;
+        public static Character Violet;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -106,6 +109,7 @@ namespace PrototypeTBS_RPG
             HealStaff = new Staff(Content.Load<Texture2D>("Items/Heal"), "Heal", 10, 1, 1);
             HealTonic = new Tonic(Content.Load<Texture2D>("Items/Tonic"), "Tonic", 10);
             Elixir = new Tonic(Content.Load<Texture2D>("Items/Elixir"), "Elixir", 1000);
+            LightLance = new Weapon(Content.Load<Texture2D>("Items/LightLance"), "Light Lance", weaponType.lance, 3, 5, 100, 1, 1, false);
 
             Knight = new Specialization(Content.Load<Texture2D>("Sprites/Knight"), "Knight", false,
                 new List<weaponType>() { weaponType.sword }, 16, 6, 1, 3, 5, 4, 8, 3, 5);
@@ -127,15 +131,19 @@ namespace PrototypeTBS_RPG
                 new List<weaponType>() { weaponType.darkMagic }, 14, 4, 6, 4, 6, 4, 4, 6, 5);
             Cleric = new Specialization(Content.Load<Texture2D>("Sprites/Cleric"), "Cleric", false,
                 new List<weaponType>() { weaponType.staff }, 12, 3, 7, 4, 3, 7, 2, 7, 5);
+            FalcoKnight = new Specialization(Content.Load<Texture2D>("Sprites/FalcoKnight"), "FalcoKnight", false,
+                new List<weaponType>() { weaponType.lance }, 12, 5, 4, 9, 7, 7, 3, 8, 7, true);
 
             Seth = new Character(Content, "Seth", Knight, alliances.player, 5, 25, 12, 0, 6, 9, 8, 15, 2, 5,
                 .7f, .5f, 0f, .3f, .35f, .3f, .65f, .15f, new List<Item>() { SteelSword, HealTonic });
             Clarisa = new Character(Content, "Clarisa", Cleric, alliances.player, .4f, .1f, .8f, .25f, .4f, .6f, .2f, .7f, 
                 new List<Item>() { HealStaff, Elixir, HealTonic });
+            Violet = new Character(Content, "Violet", FalcoKnight, alliances.player, .65f, .6f, .2f, .8f, .55f, .8f, .45f, .75f,
+                new List<Item>() { LightLance, HealTonic });
 
 
             //Temp
-            playerParty = new List<Character>() { Seth, Clarisa };
+            playerParty = new List<Character>() { Seth, Clarisa, Violet };
 
 
             mainMenuScreen = new MainMenuScreen(Content, new EventHandler(MainMenuScreenEvent));

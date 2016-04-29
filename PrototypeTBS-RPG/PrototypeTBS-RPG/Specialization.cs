@@ -47,6 +47,7 @@ namespace PrototypeTBS_RPG
         public List<specializations> promotions { get; protected set; }
         public bool isAdvancedSpec { get; protected set; }
         public string name { get; protected set; }
+        public bool canFly { get; private set; }
 
         //Base specialization stats
         public int hp { get; private set; }
@@ -60,7 +61,7 @@ namespace PrototypeTBS_RPG
         public int movement { get; private set; }
 
         public Specialization(Texture2D sprite, string name, bool isAdvanced, List<weaponType> weaponProfs, int hp,
-            int strength, int magic, int speed, int skill, int luck, int defense, int resistance, int movement)
+            int strength, int magic, int speed, int skill, int luck, int defense, int resistance, int movement, bool canfly = false)
         {
             this.sprite = sprite;
             this.name = name;
@@ -73,6 +74,7 @@ namespace PrototypeTBS_RPG
             this.defense = defense;
             this.resistance = resistance;
             this.movement = movement;
+            this.canFly = canfly;
 
             this.weaponProfs = weaponProfs;
             promotions = new List<specializations>();
