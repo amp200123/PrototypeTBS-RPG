@@ -20,8 +20,6 @@ namespace PrototypeTBS_RPG
             this.tile = tile;
             font = content.Load<SpriteFont>("Fonts/ProfileDescriptionFont");
             subFont = content.Load<SpriteFont>("Fonts/ItemDescriptionFont");
-
-            position = new Vector2(Width / 2, Height / 2);
         }
 
         public override void Draw(SpriteBatch spritebatch)

@@ -1,20 +1,28 @@
 #Map
-pppppppppppppp
-pppppppppppfpp
-ppsspppbpppppp
-ppppppfpfppppp
-ppppfpfffppspp
-ppppfffffppssp
-ppppppffppmpsp
-ppppffpppppppp
-ppmfppppfppppp
-pmmfmppffpsppp
-ppppppppppsspp
+ppppppfpppppppfpppppppffpp
+pppppppppppfpppppppspppppp
+ppsspppbppppppppffppfppppp
+ppppppfpfppppppppppppppppp
+ppppfpfffppspppppppppppppp
+ppppfffffppsspppppffpfpppp
+ppppppffppmpspppppppffpppp
+ppppffpppppppppppffppppppp
+ppmfppppfppppppfpppfpppppp
+pmmfmppffpspppfpmppppppppp
+ppppppppppsspppppppppppppp
+ppffppppppppppspsppppppspp
+ppppmppppppppmpppppssppppp
+pfppppppppmmppppppffppbppp
+pppfffpppmppppppfppppfpppp
+ppmpfpppmmppmppmppppppffpp
+ppppppppmpppppppppsspppppp
 
 #StartPos
-1,1
-3,2
+# x, y
+2,2
+4,3
 
 #Enemies
+# class, lvl, x, y, items...
 spearfighter,3,4,2,steellance
 knight,2,6,4,ironsword

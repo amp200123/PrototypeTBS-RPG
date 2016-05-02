@@ -184,7 +184,12 @@ namespace PrototypeTBS_RPG
         public void Draw(SpriteBatch spritebatch, Vector2 position)
         {
             if (active)
-                spec.Draw(spritebatch, position, Color.White);
+            {
+                if (alliance == alliances.player)
+                    spec.Draw(spritebatch, position, Color.White);
+                else if (alliance == alliances.enemy)
+                    spec.Draw(spritebatch, position, new Color(220, 80, 100));
+            }
             else spec.Draw(spritebatch, position, Color.Gray);
 
             Vector2 hpPos = position + new Vector2(-redHealth.Width / 2, 13);

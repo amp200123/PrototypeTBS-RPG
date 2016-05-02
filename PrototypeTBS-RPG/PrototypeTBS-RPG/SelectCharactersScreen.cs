@@ -37,10 +37,6 @@ namespace PrototypeTBS_RPG
                 characterBars.Add(new CharacterBar(content));
             }
 
-            characterBars.Add(new CharacterBar(content));
-            characterBars.Add(new CharacterBar(content));
-            characterBars.Add(new CharacterBar(content));
-
             for (int i = 0; i < characterBars.Count; i++)
             {
                 int row = (int)Math.Floor(i / 3f);

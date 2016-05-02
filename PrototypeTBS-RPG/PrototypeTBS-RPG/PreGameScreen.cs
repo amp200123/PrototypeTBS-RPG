@@ -46,7 +46,8 @@ namespace PrototypeTBS_RPG
                     {
                         for (int i = 0; i < game.startTiles.Count; i++)
                         {
-                            game.AddCharacter(selectScreen.selectedChars[i], game.startTiles[i]);
+                            if (i < selectScreen.selectedChars.Count)
+                                game.AddCharacter(selectScreen.selectedChars[i], game.startTiles[i]);
                         }
 
                         screenEvent.Invoke(this, new EventArgs());

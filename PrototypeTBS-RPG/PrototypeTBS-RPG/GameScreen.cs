@@ -313,8 +313,8 @@ namespace PrototypeTBS_RPG
                     }
 
                     level = Convert.ToInt32(parts[1]);
-                    x = Convert.ToInt32(parts[2]);
-                    y = Convert.ToInt32(parts[3]);
+                    y = Convert.ToInt32(parts[2]);
+                    x = Convert.ToInt32(parts[3]);
 
                     if (parts.Length > 4) 
                     {
@@ -770,6 +770,10 @@ namespace PrototypeTBS_RPG
                         tile.isSelected = true;
                         selectedTile = tile;
                         tileBar = new TileBar(content, selectedTile);
+                        tileBar.position = new Vector2(tileBar.Width / 2, tileBar.Height / 2);
+
+                        if (tileBar.boundingRectangle.Contains(newMouseState.Position))
+                            tileBar.position = new Vector2(tileBar.Width / 2, Game1.WINDOW_HEIGHT - tileBar.Height / 2);
                     }
                     else tile.isSelected = false;
                 }
@@ -955,7 +959,31 @@ namespace PrototypeTBS_RPG
                 newMouseState.Position != oldMouseState.Position)
             {
                 movingScreen = true;
-                MoveScreen((newMouseState.Position - oldMouseState.Position).ToVector2());
+
+                float xMovement = newMouseState.Position.X - oldMouseState.Position.X;
+                float yMovement = newMouseState.Position.Y - oldMouseState.Position.Y;
+
+                if ((xMovement > 0 && map[0, 0].boundingRectangle.Left < 0) ||
+                    (xMovement < 0 && map[map.GetLength(0) - 1, map.GetLength(1) - 1].boundingRectangle.Right > Game1.WINDOW_WIDTH))
+                {
+                    if (map[0, 0].boundingRectangle.Left + xMovement > 0)
+                        xMovement = -map[0, 0].boundingRectangle.Left;
+                    else if (map[map.GetLength(0) - 1, map.GetLength(1) - 1].boundingRectangle.Right + xMovement < Game1.WINDOW_WIDTH)
+                        xMovement = Game1.WINDOW_WIDTH - map[map.GetLength(0) - 1, map.GetLength(1) - 1].boundingRectangle.Right;
+                }
+                else xMovement = 0;
+
+                if ((yMovement > 0 && map[0, 0].boundingRectangle.Top < 0) ||
+                    (yMovement < 0 && map[map.GetLength(0) - 1, map.GetLength(1) - 1].boundingRectangle.Bottom > Game1.WINDOW_HEIGHT))
+                {
+                    if (map[0, 0].boundingRectangle.Top + yMovement > 0)
+                        yMovement = -map[0, 0].boundingRectangle.Top;
+                    else if (map[map.GetLength(0) - 1, map.GetLength(1) - 1].boundingRectangle.Bottom + yMovement < Game1.WINDOW_HEIGHT)
+                        yMovement = Game1.WINDOW_HEIGHT - map[map.GetLength(0) - 1, map.GetLength(1) - 1].boundingRectangle.Bottom;
+                }
+                else yMovement = 0;
+
+                MoveScreen(xMovement, yMovement);
             }
 
             if (newMouseState.LeftButton == ButtonState.Released)
