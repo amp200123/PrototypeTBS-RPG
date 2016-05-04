@@ -114,7 +114,7 @@ namespace PrototypeTBS_RPG
             Knight = new Specialization(Content.Load<Texture2D>("Sprites/Knight"), "Knight", false,
                 new List<weaponType>() { weaponType.sword }, 16, 6, 1, 3, 5, 4, 8, 3, 5);
             SpearFighter = new Specialization(Content.Load<Texture2D>("Sprites/SpearFighter"), "Spear Fighter", false,
-                new List<weaponType>() { weaponType.lance }, 14, 7, 4, 6, 5, 7, 5, 3, 5);
+                new List<weaponType>() { weaponType.lance }, 13, 7, 4, 6, 5, 7, 5, 3, 5);
             Warrior = new Specialization(Content.Load<Texture2D>("Sprites/Warrior"), "Warrior", false,
                 new List<weaponType>() { weaponType.axe }, 18, 7, 0, 3, 2, 1, 6, 2, 5);
             Archer = new Specialization(Content.Load<Texture2D>("Sprites/Archer"), "Archer", false,
@@ -132,7 +132,7 @@ namespace PrototypeTBS_RPG
             Cleric = new Specialization(Content.Load<Texture2D>("Sprites/Cleric"), "Cleric", false,
                 new List<weaponType>() { weaponType.staff }, 12, 3, 7, 4, 3, 7, 2, 7, 5);
             FalcoKnight = new Specialization(Content.Load<Texture2D>("Sprites/FalcoKnight"), "FalcoKnight", false,
-                new List<weaponType>() { weaponType.lance }, 12, 5, 4, 9, 7, 7, 3, 8, 7, true);
+                new List<weaponType>() { weaponType.lance }, 14, 5, 4, 9, 7, 7, 4, 8, 7, true);
 
             Seth = new Character(Content, "Seth", Knight, alliances.player, 5, 25, 12, 0, 6, 9, 8, 15, 2, 5,
                 .7f, .5f, 0f, .3f, .35f, .3f, .65f, .15f, new List<Item>() { SteelSword, HealTonic });

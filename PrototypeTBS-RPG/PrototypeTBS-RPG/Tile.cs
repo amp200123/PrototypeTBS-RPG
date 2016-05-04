@@ -49,6 +49,7 @@ namespace PrototypeTBS_RPG
         public bool attackable;
         public bool healable;
         public bool movable;
+        public Tile attackFrom;
 
         private Character character;
         private Texture2D selectedTile;

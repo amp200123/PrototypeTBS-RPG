@@ -558,3 +558,9 @@
 /processorParam:TextureFormat=Color
 /build:Items/LightLance.png
 
+#begin Fonts/WinFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Fonts/WinFont.spritefont
+

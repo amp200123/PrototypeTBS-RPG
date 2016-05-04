@@ -40,10 +40,18 @@ namespace PrototypeTBS_RPG
         private bool renderAttackMenu = false;
         private bool renderHealMenu = false;
         private bool renderMoveMenu = false;
+        private bool enemiesLeft = true;
+
+        private TimeSpan enemydelayOldTime;
+        private int enemyUpdateIndex;
+        private int enemyUpdatePhase;
+        private Tile enemyTarget;
 
         private List<Tile> attackableTiles;
         private List<Tile> healableTiles;
         private List<Character> deadCharacters;
+
+        private SpriteFont winFont;
 
         private MouseState oldMouseState = Mouse.GetState();
         private KeyboardState oldKeyState = Keyboard.GetState();
@@ -60,6 +68,8 @@ namespace PrototypeTBS_RPG
             menuItems = new List<PopupMenuBar>();
             characters = new List<Character>();
             deadCharacters = new List<Character>();
+
+            winFont = content.Load<SpriteFont>("Fonts/WinFont");
 
             ImportLevel(content, fileName);
 
@@ -97,27 +107,43 @@ namespace PrototypeTBS_RPG
 
         public override void Update(GameTime gametime)
         {
-            switch (turn)
+            bool enemiesLeft = false;
+            foreach (Character ch in characters)
             {
-                case (turnStatus.beforePlayer):
-                    BeforePlayerTurn();
-                    break;
+                if (ch.alliance == alliances.enemy)
+                    enemiesLeft = true;
+            }
+            this.enemiesLeft = enemiesLeft;
 
-                case (turnStatus.player):
-                    PlayerTurnUpdate(gametime);
-                    break;
+            if (enemiesLeft)
+            {
+                switch (turn)
+                {
+                    case (turnStatus.beforePlayer):
+                        BeforePlayerTurn();
+                        break;
 
-                case (turnStatus.beforeEnemy):
-                    BeforeEnemyTurn();
-                    break;
+                    case (turnStatus.player):
+                        PlayerTurnUpdate(gametime);
+                        break;
 
-                case (turnStatus.enemy):
-                    EnemyTurnUpdate(gametime);
-                    break;
+                    case (turnStatus.beforeEnemy):
+                        BeforeEnemyTurn();
+                        break;
 
-                default:
-                    turn = turnStatus.beforePlayer;
-                    break;
+                    case (turnStatus.enemy):
+                        EnemyTurnUpdate(gametime);
+                        break;
+
+                    default:
+                        turn = turnStatus.beforePlayer;
+                        break;
+                }
+            }
+            else
+            {
+                if (Mouse.GetState().LeftButton == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Enter))
+                    screenEvent.Invoke(this, new EventArgs());
             }
         }
 
@@ -138,6 +164,12 @@ namespace PrototypeTBS_RPG
 
             if (tileBar != null)
                 tileBar.Draw(spritebatch);
+
+
+            if (!enemiesLeft)
+                spritebatch.DrawString(winFont, "Level Complete!",
+                    new Vector2(Game1.WINDOW_WIDTH / 2 - winFont.MeasureString("Level Complete!").X / 2,
+                        Game1.WINDOW_HEIGHT / 2 - winFont.MeasureString("Level Complete!").Y / 2), Color.Green);
         }
 
         public void AddCharacter(Character character, Tile tile)
@@ -423,7 +455,7 @@ namespace PrototypeTBS_RPG
                     {
                         attackableTiles = new List<Tile>();
 
-                        FindAttackableTile(selectedTile.charOnTile.alliance, selectedTile, eqWpn.maxRange, eqWpn.minRange, eqWpn.maxRange);
+                        FindAttackableTile(selectedTile.charOnTile.alliance, selectedTile, eqWpn.maxRange, eqWpn.minRange, eqWpn.maxRange, selectedTile);
 
                         if (attackableTiles.Count > 0)
                             canAttack = true;
@@ -549,7 +581,7 @@ namespace PrototypeTBS_RPG
             }
         }
 
-        private void FindAttackableTile(alliances alliance, Tile currentTile, int rangeLeft, int minRange, int maxRange)
+        private void FindAttackableTile(alliances alliance, Tile currentTile, int rangeLeft, int minRange, int maxRange, Tile attackLocation)
         {
             //Make sure that tile is still in range
             if (rangeLeft < 0)
@@ -559,6 +591,7 @@ namespace PrototypeTBS_RPG
             if (currentTile.charOnTile != null && currentTile.charOnTile.alliance != alliance &&
                 maxRange - rangeLeft <= maxRange && maxRange - rangeLeft >= minRange)
             {
+                currentTile.attackFrom = attackLocation;
                 attackableTiles.Add(currentTile);
             }
 
@@ -586,25 +619,25 @@ namespace PrototypeTBS_RPG
             {
                 Tile checkTile = map[currentY - 1, currentX];
 
-                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange);
+                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange, attackLocation);
             }
             if (currentX < map.GetLength(1) - 1) //Right 
             {
                 Tile checkTile = map[currentY, currentX + 1];
 
-                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange);
+                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange, attackLocation);
             }
             if (currentY < map.GetLength(0) - 1) //Down
             {
                 Tile checkTile = map[currentY + 1, currentX];
 
-                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange);
+                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange, attackLocation);
             }
             if (currentX > 0) //Left
             {
                 Tile checkTile = map[currentY, currentX - 1];
 
-                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange);
+                FindAttackableTile(alliance, checkTile, rangeLeft - 1, minRange, maxRange, attackLocation);
             }
         }
 
@@ -765,7 +798,9 @@ namespace PrototypeTBS_RPG
                 tileBar = null;
                 foreach (Tile tile in map)
                 {
-                    if (tile.boundingRectangle.Contains(newMouseState.Position))
+                    if (tile.boundingRectangle.Contains(newMouseState.Position) && 
+                        newMouseState.Position.X <= Game1.WINDOW_WIDTH && newMouseState.Position.X >= 0 &&
+                        newMouseState.Position.Y <= Game1.WINDOW_HEIGHT && newMouseState.Position.Y >= 0)
                     {
                         tile.isSelected = true;
                         selectedTile = tile;
@@ -784,7 +819,9 @@ namespace PrototypeTBS_RPG
             PopupMenuBar selectedMenu = null;
             foreach (PopupMenuBar menuItem in menuItems)
             {
-                if (renderMenu && menuItem.boundingRectangle.Contains(newMouseState.Position))
+                if (renderMenu && menuItem.boundingRectangle.Contains(newMouseState.Position) &&
+                    newMouseState.Position.X <= Game1.WINDOW_WIDTH && newMouseState.Position.X >= 0 &&
+                    newMouseState.Position.Y <= Game1.WINDOW_HEIGHT && newMouseState.Position.Y >= 0)
                 {
                     menuItem.isSelected = true;
                     selectedMenu = menuItem;
@@ -996,6 +1033,8 @@ namespace PrototypeTBS_RPG
                     ch.tile.charOnTile = null;
                     ch.tile = null;
                 }
+
+                characters.Remove(ch);
             }
 
             oldMouseState = newMouseState;
@@ -1004,16 +1043,159 @@ namespace PrototypeTBS_RPG
 
         private void BeforeEnemyTurn()
         {
+            foreach (Character ch in characters)
+            {
+                ch.active = true;
+                ch.canMove = true;
 
+                if (ch.alliance == alliances.enemy)
+                {
+                    ch.currentHp += (int)Math.Round((ch.tile.health / 100f) * ch.hp);
+                    if (ch.currentHp > ch.hp)
+                        ch.currentHp = ch.hp;
+                }
+            }
 
+            enemyUpdateIndex = 0;
             turn = turnStatus.enemy;
         }
 
         private void EnemyTurnUpdate(GameTime gametime)
         {
+            if (gametime.TotalGameTime.TotalSeconds >= enemydelayOldTime.TotalSeconds + 1)
+            {
+                switch (enemyUpdatePhase)
+                {
+                    case 0: //New character / delay before moving
+
+                        for (int i = enemyUpdateIndex; i < characters.Count; i++)
+                        {
+                            if (characters[i].alliance == alliances.enemy)
+                            {
+                                enemyUpdateIndex = i;
+                                selectedTile = characters[i].tile;
+                                break;
+                            }
+
+                            if (i == characters.Count - 1)
+                            {
+                                turn = turnStatus.beforePlayer;
+                                return;
+                            }
+                        }
+
+                        break;
+                    case 1: // Move
+                        EnemyMoveAI(characters[enemyUpdateIndex]);
+                        break;
+                    case 2: // Attack
+                        EnemyAttackAI(characters[enemyUpdateIndex]);
+                        break;
+                    case 3: // Delay after attack
+                        enemyUpdateIndex++;
+                        break;
+                }
+
+                enemydelayOldTime = gametime.TotalGameTime;
+                enemyUpdatePhase++;
+                if (enemyUpdatePhase > 3)
+                    enemyUpdatePhase = 0;
+            }
+        }
+
+        private void EnemyMoveAI(Character ch)
+        {
+            attackableTiles = new List<Tile>();
+            foreach (Tile tile in map)
+            {
+                if (tile.movable)
+                    tile.movable = false;
+            }
+
+            FindMovableTiles(ch.alliance, ch.tile, ch.movement, ch.spec.canFly);
+
+            foreach (Tile tile in map)
+            {
+                if (tile.movable)
+                    FindAttackableTile(ch.alliance, tile, ch.equipedWeapon.maxRange,
+                        ch.equipedWeapon.minRange, ch.equipedWeapon.maxRange, tile);
+            }
+
+            Tile enemyAttackTarget = null;
+            int prevDamage = 0;
+
+            foreach (Tile tile in attackableTiles)
+            {
+                if (enemyAttackTarget == null)
+                    enemyAttackTarget = tile;
+
+                Tile attackTile = tile;
+                int damage; float weaponEffectiveness = 1;
+
+                if (attackTile.charOnTile.equipedWeapon != null)
+                {
+                    if (ch.equipedWeapon.advantage == attackTile.charOnTile.equipedWeapon.type)
+                        weaponEffectiveness = 2;
+                    else if (ch.equipedWeapon.weakness == attackTile.charOnTile.equipedWeapon.type)
+                        weaponEffectiveness = 0.5f;
+                }
+
+                if (ch.equipedWeapon.magicWeapon)
+                {
+                    damage = (int)(ch.magic + ch.equipedWeapon.damage * weaponEffectiveness -
+                        attackTile.charOnTile.resistance - attackTile.defense);
+                }
+                else
+                {
+                    damage = (int)(ch.strength + ch.equipedWeapon.damage * weaponEffectiveness -
+                        attackTile.charOnTile.defense - attackTile.defense);
+                }
 
 
-            turn = turnStatus.beforePlayer;
+                if (damage > prevDamage)
+                {
+                    prevDamage = damage;
+                    enemyAttackTarget = tile;
+                }
+            }
+
+            enemyTarget = enemyAttackTarget;
+
+            if (enemyAttackTarget != null)
+                enemyAttackTarget.attackFrom.charOnTile = ch;
+        }
+
+        private void EnemyAttackAI(Character ch)
+        {
+            if (enemyTarget != null)
+            {
+                int attackTileX = 0;
+                int attackTileY = 0;
+                int locationTileX = 0;
+                int locationTileY = 0;
+
+                //Find indexes of tiles
+                for (int y = 0; y < map.GetLength(0); y++)
+                {
+                    for (int x = 0; x < map.GetLength(1); x++)
+                    {
+                        if (map[y, x].Equals(enemyTarget))
+                        {
+                            attackTileY = y;
+                            attackTileX = x;
+                        }
+
+                        if (map[y, x].Equals(ch.tile))
+                        {
+                            locationTileY = y;
+                            locationTileX = x;
+                        }
+                    }
+                }
+
+                int attackRange = Math.Abs(locationTileX - attackTileX) + Math.Abs(locationTileY - attackTileY);
+                ch.Attack(enemyTarget.charOnTile, attackRange);
+            }
         }
     }
 }

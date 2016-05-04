@@ -136,6 +136,7 @@
     <None Include="Content\Fonts\MiniMenuBarFont.spritefont" />
     <None Include="Content\Fonts\ProfileDescriptionFont.spritefont" />
     <None Include="Content\Fonts\ProfileLargeFont.spritefont" />
+    <None Include="Content\Fonts\WinFont.spritefont" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
