@@ -787,6 +787,9 @@ namespace PrototypeTBS_RPG
                     ch.tile = null;
                 }
 
+                if (characters.IndexOf(ch) <= enemyUpdateIndex)
+                    enemyUpdateIndex--;
+
                 characters.Remove(ch);
             }
         }

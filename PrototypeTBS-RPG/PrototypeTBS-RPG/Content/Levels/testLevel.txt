@@ -26,3 +26,4 @@ ppppppppmpppppppppsspppppp
 # class, lvl, x, y, items...
 spearfighter,3,4,2,steellance
 knight,2,6,4,ironsword
+mage,1,6,5,firetome,healtonic
